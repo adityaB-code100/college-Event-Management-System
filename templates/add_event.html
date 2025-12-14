@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Event</title>
+  <style>
+    /* Base styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #6e8efb, #a777e3);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .container-box {
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+    }
+    
+    .page-title {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+      font-weight: 600;
+      font-size: 32px;
+      position: relative;
+    }
+    
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(to right, #6e8efb, #a777e3);
+      border-radius: 2px;
+    }
+    
+    /* Flash messages */
+    .flash-message {
+      padding: 15px 20px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .flash-message.success {
+      background: linear-gradient(135deg, #e7f7ef, #d4edda);
+      color: #155724;
+      border-left: 4px solid #28a745;
+    }
+    
+    .flash-message.error {
+      background: linear-gradient(135deg, #fde8e8, #f8d7da);
+      color: #721c24;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .flash-message.info {
+      background: linear-gradient(135deg, #e0f2fe, #d1ecf1);
+      color: #0369a1;
+      border-left: 4px solid #17a2b8;
+    }
+    
+    .flash-message.warning {
+      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+      color: #856404;
+      border-left: 4px solid #ffc107;
+    }
+    
+    /* Form styles */
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+      font-size: 16px;
+    }
+    
+    input, textarea {
+      padding: 14px 15px;
+      margin-bottom: 25px;
+      border: 2px solid #e1e5e9;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #6e8efb;
+      box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+    }
+    
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: inherit;
+    }
+    
+    /* Date validation styles */
+    .date-error {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: -20px;
+      margin-bottom: 25px;
+      display: none;
+    }
+    
+    .duplicate-error {
+      color: #dc3545;
+      font-size: 14px;
+      margin-top: -20px;
+      margin-bottom: 25px;
+      display: none;
+    }
+    
+    input.invalid {
+      border-color: #dc3545;
+      background-color: #fdf2f2;
+    }
+    
+    /* Button styles */
+    .btn-success {
+      background: linear-gradient(to right, #28a745, #20c997);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      width: 100%;
+      box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px rgba(40, 167, 69, 0.4);
+    }
+    
+    .btn-success:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-primary {
+      display: inline-block;
+      background: linear-gradient(to right, #6e8efb, #a777e3);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-align: center;
+      margin-top: 15px;
+      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .container-box {
+        padding: 30px 25px;
+      }
+      
+      .page-title {
+        font-size: 28px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container-box {
+        padding: 25px 20px;
+      }
+      
+      .page-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container-box">
+  <h1 class="page-title">Add New Event</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" id="eventForm">
+    <label>Title</label>
+    <input type="text" name="title" id="eventTitle" required placeholder="Enter event title">
+
+    <label>Description</label>
+    <textarea name="description" id="eventDescription" placeholder="Enter event description (optional)"></textarea>
+
+    <label>Date</label>
+    <input type="date" name="date" id="eventDate" required>
+    <div class="date-error" id="dateError">Event date cannot be in the past</div>
+
+    <label>Location</label>
+    <input type="text" name="location" id="eventLocation" placeholder="Enter event location (optional)">
+
+    <div class="duplicate-error" id="duplicateError">
+      An event with the same title, date, and location already exists!
+    </div>
+
+    <button type="submit" class="btn-success" id="submitBtn">Add Event</button>
+  </form>
+
+  <p style="text-align:center;margin-top:15px;">
+    <a href="{{ url_for('dashboard') }}" class="btn-primary">Back to Dashboard</a>
+  </p>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('eventDate');
+    const dateError = document.getElementById('dateError');
+    const duplicateError = document.getElementById('duplicateError');
+    const submitBtn = document.getElementById('submitBtn');
+    const eventForm = document.getElementById('eventForm');
+    const eventTitle = document.getElementById('eventTitle');
+    const eventLocation = document.getElementById('eventLocation');
+    
+    // Set min date to today
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const minDate = `${yyyy}-${mm}-${dd}`;
+    
+    dateInput.setAttribute('min', minDate);
+    
+    // Validate date on input change
+    dateInput.addEventListener('change', validateDate);
+    
+    // Validate form on submit
+    eventForm.addEventListener('submit', function(e) {
+      if (!validateDate()) {
+        e.preventDefault();
+        dateError.style.display = 'block';
+        dateInput.classList.add('invalid');
+        submitBtn.disabled = true;
+        
+        // Re-enable button after 2 seconds
+        setTimeout(() => {
+          submitBtn.disabled = false;
+        }, 2000);
+      }
+    });
+    
+    function validateDate() {
+      const selectedDate = new Date(dateInput.value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        dateError.style.display = 'block';
+        dateInput.classList.add('invalid');
+        return false;
+      } else {
+        dateError.style.display = 'none';
+        dateInput.classList.remove('invalid');
+        return true;
+      }
+    }
+    
+    // Hide error when user starts typing
+    dateInput.addEventListener('input', function() {
+      if (validateDate()) {
+        dateError.style.display = 'none';
+        dateInput.classList.remove('invalid');
+      }
+    });
+  });
+</script>
+</body>
+</html>

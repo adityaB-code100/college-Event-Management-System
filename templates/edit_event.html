@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event: {{ event.title }}</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Enhanced CSS with modern styling */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .form-container { 
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Enhanced input and textarea styling */
+        input[type="text"], 
+        input[type="date"], 
+        textarea {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: #fafafa;
+        }
+        
+        input:focus, 
+        textarea:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        input:hover,
+        textarea:hover {
+            border-color: #d1d5db;
+            background: #f8fafc;
+        }
+        
+        /* Custom button styling */
+        .submit-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #5b5fed 0%, #7c4cf5 100%);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Enhanced flash message styling */
+        .flash-message {
+            border-radius: 10px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        /* Animation for flash messages */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* Custom scrollbar for textarea */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Form label styling */
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        /* Card hover effect */
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <div class="form-container w-full bg-white p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-100/50 card-hover">
+        
+        <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-6 border-b pb-4">
+            Edit Event: <span class="text-indigo-600">{{ event.title }}</span>
+        </h1>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-6 space-y-2">
+            {% for category, message in messages %}
+              <div class="flash-message p-3 text-sm rounded-lg font-medium 
+                {% if category == 'success' %} bg-green-100 text-green-700 border-green-500 {% endif %}
+                {% if category == 'danger' %} bg-red-100 text-red-700 border-red-500 {% endif %}
+                {% if category == 'warning' %} bg-yellow-100 text-yellow-700 border-yellow-500 {% endif %}
+                {% if category == 'info' %} bg-blue-100 text-blue-700 border-blue-500 {% endif %}
+              " role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form Submission: The action points to the same Flask route, passing the event ID -->
+        <form method="POST" action="{{ url_for('edit_event', event_id=event.id) }}" class="space-y-6">
+            
+            <!-- Title -->
+            <div>
+                <label for="title" class="form-label">Event Title</label>
+                <input type="text" id="title" name="title" 
+                       value="{{ event.title }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                       required>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label for="description" class="form-label">Description</label>
+                <textarea id="description" name="description" rows="4"
+                          class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none" 
+                          required>{{ event.description }}</textarea>
+            </div>
+
+            <!-- Date -->
+            <div>
+                <label for="date" class="form-label">Date</label>
+                <!-- Note: MySQL dates are typically YYYY-MM-DD, which works directly for HTML date input type -->
+                <input type="date" id="date" name="date" 
+                       value="{{ event.date }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                       required>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label for="location" class="form-label">Location</label>
+                <input type="text" id="location" name="location" 
+                       value="{{ event.location }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                       required>
+            </div>
+
+            <!-- Submission Button -->
+            <button type="submit" 
+                    class="submit-btn w-full py-3 text-white font-semibold text-lg rounded-xl transition duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
+                Save Changes
+            </button>
+        </form>
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('view_events') }}" 
+               class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition duration-150 hover:underline">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Cancel and Go Back to Events
+            </a>
+        </div>
+    </div>
+</body>
+</html>

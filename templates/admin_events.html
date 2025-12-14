@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Events</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container-box">
+  <h1 class="page-title">Manage Events</h1>
+
+  <div class="section-card">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="flash-message {{ category }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <p><a href="{{ url_for('add_event') }}" class="btn-primary">+ Add New Event</a></p>
+
+    <table class="admin-events-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Location</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td>{{ event.name }}</td>
+          <td>{{ event.date }}</td>
+          <td>{{ event.location }}</td>
+          <td>
+            <div class="action-buttons">
+              <a href="{{ url_for('view_event', event_id=event.id) }}">View</a>
+              <a href="{{ url_for('edit_event', event_id=event.id) }}">Edit</a>
+              <form action="{{ url_for('delete_event', event_id=event.id) }}" method="post" style="display:inline;">
+                <button type="submit" class="delete-btn">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p style="margin-top:20px;">
+      <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<div class="bg-white rounded-2xl shadow-xl p-8">
+    <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Admin Dashboard</h2>
+        <p class="text-gray-600">Manage events and view participants</p>
+    </div>
+
+    <!-- Main Admin Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Create Event Card -->
+        <a href="{{ url_for('add_event') }}" 
+           class="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl p-6 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <i class="fas fa-calendar-plus text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Add Event</h3>
+            <p class="text-blue-100">Add a new event to the system</p>
+        </a>
+
+        <!-- View Events Card -->
+        <a href="{{ url_for('view_events') }}" 
+           class="bg-gradient-to-br from-green-500 to-teal-600 text-white rounded-xl p-6 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <i class="fas fa-calendar-alt text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">View Events</h3>
+            <p class="text-green-100">Browse and manage all events</p>
+        </a>
+
+        <!-- View Participants Card -->
+        <a href="{{ url_for('all_registrations') }}" 
+           class="bg-gradient-to-br from-orange-500 to-red-600 text-white rounded-xl p-6 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+            <i class="fas fa-users text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">View Participants</h3>
+            <p class="text-orange-100">See all event registrations</p>
+        </a>
+    </div>
+
+    <!-- Quick Admin Links -->
+    <div class="bg-gray-50 rounded-xl p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <a href="{{ url_for('add_event') }}" 
+               class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-500 transition duration-200">
+                <i class="fas fa-plus-circle text-blue-500 text-xl mr-3"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-800">Add Event</h4>
+                    <p class="text-sm text-gray-600">Create new event</p>
+                </div>
+            </a>
+            <a href="{{ url_for('view_events') }}" 
+               class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-green-500 transition duration-200">
+                <i class="fas fa-list text-green-500 text-xl mr-3"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-800">View Events</h4>
+                    <p class="text-sm text-gray-600">Browse all events</p>
+                </div>
+            </a>
+            <a href="{{ url_for('all_registrations') }}" 
+               class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-orange-500 transition duration-200">
+                <i class="fas fa-user-check text-orange-500 text-xl mr-3"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-800">View Participants</h4>
+                    <p class="text-sm text-gray-600">See registrations</p>
+                </div>
+            </a>
+            <a href="{{ url_for('logout') }}" 
+               class="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:border-red-500 transition duration-200">
+                <i class="fas fa-sign-out-alt text-red-500 text-xl mr-3"></i>
+                <div>
+                    <h4 class="font-semibold text-gray-800">Logout</h4>
+                    <p class="text-sm text-gray-600">Sign out</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

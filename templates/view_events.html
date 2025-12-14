@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Available Events</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container-box">
+  <h1 class="page-title">Available Events</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <p class="flash-message {{ category }}">{{ message }}</p>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="events-grid">
+    {% for event in events %}
+    <div class="event-card">
+      <h3>{{ event.name }}</h3>
+      <p><strong>Date:</strong> {{ event.date }}</p>
+      <a class="button" href="{{ url_for('register_event', event_id=event.id) }}">Register</a>
+    </div>
+    {% endfor %}
+  </div>
+
+  <p style="margin-top:20px;">
+    <a href="{{ url_for('my_registrations') }}">My Registrations</a>
+  </p>
+</div>
+
+
+</body>
+</html>

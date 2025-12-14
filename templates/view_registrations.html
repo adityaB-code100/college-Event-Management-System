@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrations for {{ event_title }} - College Events</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts for better typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { 
+      font-family: 'Poppins', 'Inter', sans-serif; 
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .font-inter {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-poppins {
+      font-family: 'Poppins', sans-serif;
+    }
+    .stats-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    .registration-row:hover {
+      background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+      transform: translateX(5px);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 font-poppins">
+
+  <div class="max-w-6xl mx-auto fade-in">
+    
+    <!-- Header Section -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-800 mb-3 font-poppins">
+        <i class="fas fa-users text-purple-600 mr-3"></i>
+        Registrations for {{ event_title }}
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto font-inter">
+        View all student registrations for this event
+      </p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="stats-card text-center">
+        <div class="flex items-center justify-center mb-3">
+          <i class="fas fa-users text-3xl text-white opacity-80"></i>
+        </div>
+        <h3 class="text-3xl font-bold mb-2">{{ registrations|length }}</h3>
+        <p class="text-white opacity-90 font-inter">Total Registrations</p>
+      </div>
+      <div class="stats-card text-center">
+        <div class="flex items-center justify-center mb-3">
+          <i class="fas fa-user-check text-3xl text-white opacity-80"></i>
+        </div>
+        <h3 class="text-3xl font-bold mb-2">{{ registrations|length }}</h3>
+        <p class="text-white opacity-90 font-inter">Confirmed</p>
+      </div>
+      <div class="stats-card text-center">
+        <div class="flex items-center justify-center mb-3">
+          <i class="fas fa-chart-line text-3xl text-white opacity-80"></i>
+        </div>
+        <h3 class="text-3xl font-bold mb-2">100%</h3>
+        <p class="text-white opacity-90 font-inter">Attendance Rate</p>
+      </div>
+    </div>
+
+    <!-- Registrations Table Container -->
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover font-inter">
+      <div class="gradient-bg px-6 py-4">
+        <h2 class="text-xl font-bold text-white flex items-center font-poppins">
+          <i class="fas fa-list-check mr-2"></i> Registration Details
+        </h2>
+      </div>
+      
+      {% if registrations %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                <i class="fas fa-hashtag mr-2"></i> ID
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                <i class="fas fa-user-graduate mr-2"></i> Student Name
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                <i class="fas fa-phone mr-2"></i> Phone
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                <i class="fas fa-comment mr-2"></i> Comments
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            {% for reg in registrations %}
+            <tr class="registration-row fade-in" style="animation-delay: {{ loop.index * 0.05 }}s;">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-purple-100 text-purple-800 font-bold text-sm font-poppins">
+                  {{ loop.index }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm">
+                      {{ reg.student_name[0]|upper }}
+                    </span>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-semibold text-gray-900 font-poppins">
+                      {{ reg.student_name }}
+                    </div>
+                    <div class="text-sm text-gray-500 font-inter">
+                      Student
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900 font-medium font-inter">
+                  <i class="fas fa-phone text-green-500 mr-2"></i>
+                  {{ reg.phone }}
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-600 font-inter max-w-xs">
+                  {% if reg.comments and reg.comments != 'no' %}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <i class="fas fa-comment-dots text-blue-500 mr-2"></i>
+                      {{ reg.comments }}
+                    </div>
+                  {% else %}
+                    <span class="text-gray-400 italic">
+                      <i class="fas fa-comment-slash mr-2"></i>
+                      No comments
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-12">
+        <div class="flex flex-col items-center justify-center text-gray-500">
+          <i class="fas fa-users-slash text-6xl mb-4 text-gray-300"></i>
+          <p class="text-xl font-medium mb-2 font-poppins">No Registrations Yet</p>
+          <p class="text-sm text-gray-600 max-w-md mx-auto font-inter">
+            No students have registered for this event yet. 
+            Share the event link to get more registrations.
+          </p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+      <a href="{{ url_for('view_events') }}" 
+         class="px-8 py-3 text-md font-semibold rounded-xl bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white transition duration-200 shadow-xl flex items-center justify-center font-poppins">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Events
+      </a>
+      <a href="{{ url_for('dashboard') }}" 
+         class="px-8 py-3 text-md font-semibold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition duration-200 shadow-xl flex items-center justify-center font-poppins">
+        <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+      </a>
+      {% if registrations %}
+      <button onclick="exportRegistrations()" 
+              class="px-8 py-3 text-md font-semibold rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition duration-200 shadow-xl flex items-center justify-center font-poppins">
+        <i class="fas fa-download mr-2"></i> Export CSV
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function exportRegistrations() {
+      // In a real application, this would generate and download a CSV file
+      alert('Export functionality would be implemented here! This would download a CSV file with all registration data.');
+    }
+
+    // Add interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add staggered animation to table rows
+      const tableRows = document.querySelectorAll('.registration-row');
+      tableRows.forEach((row, index) => {
+        row.style.animationDelay = `${index * 0.05}s`;
+      });
+    });
+  </script>
+
+</body>
+</html>

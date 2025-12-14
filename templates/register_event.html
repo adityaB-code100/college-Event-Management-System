@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for Event</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for enhanced aesthetic appeal */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container-box { 
+            max-width: 480px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        /* Enhanced input and textarea styling */
+        input[type="text"], 
+        input[type="email"], 
+        input[type="tel"], 
+        textarea {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: #fafafa;
+        }
+        
+        input:focus, 
+        textarea:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            background: white;
+            transform: translateY(-2px);
+        }
+        
+        input:hover,
+        textarea:hover {
+            border-color: #d1d5db;
+            background: #f8fafc;
+        }
+        
+        /* Custom button styling */
+        .submit-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            background: linear-gradient(135deg, #5b5fed 0%, #7c4cf5 100%);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        /* Disabled button styling */
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .submit-btn:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Enhanced flash message styling */
+        .flash-message {
+            border-radius: 10px;
+            border-left: 4px solid;
+        }
+        
+        /* Warning box styling */
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+        }
+        
+        /* Smooth transitions for all interactive elements */
+        * {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        /* Custom scrollbar for textarea */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        textarea::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    <!-- Main Registration Card -->
+    <div class="container-box w-full bg-white p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-100/50">
+
+        <!-- Display Event Information -->
+        <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-4">
+            Register for {{ event.title }}
+        </h1>
+        <div class="text-center text-gray-600 mb-6 border-b pb-4 border-gray-200/50">
+            <p class="text-lg font-medium">{{ event.description }}</p>
+            <p class="mt-2 text-sm">
+                <span class="font-semibold text-indigo-600">Date:</span> {{ event.date }} 
+                | 
+                <span class="font-semibold text-indigo-600">Location:</span> {{ event.location }}
+            </p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-4 space-y-2">
+            {% for category, message in messages %}
+              <div class="flash-message p-3 text-sm rounded-lg font-medium 
+                {% if category == 'success' %} bg-green-100 text-green-700 border-green-500 {% endif %}
+                {% if category == 'danger' %} bg-red-100 text-red-700 border-red-500 {% endif %}
+                {% if category == 'warning' %} bg-yellow-100 text-yellow-700 border-yellow-500 {% endif %}
+                {% if category == 'info' %} bg-blue-100 text-blue-700 border-blue-500 {% endif %}
+              " role="alert">
+                {{ message }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <!-- CHECK FOR EXISTING REGISTRATION -->
+        {% if existing_registration %}
+            <!-- Warning: Already registered for another event -->
+            <div class="warning-box p-4 rounded-xl mb-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-lg font-semibold text-amber-800">Already Registered!</h3>
+                        <div class="mt-2 text-amber-700">
+                            <p>You are currently registered for: <strong>{{ existing_registration.event.title }}</strong></p>
+                            <p class="text-sm mt-1">Date: {{ existing_registration.event.date }} | Location: {{ existing_registration.event.location }}</p>
+                            <p class="text-sm mt-2">You can only register for one event at a time.</p>
+                        </div>
+                        <div class="mt-4">
+                            <a href="{{ url_for('student_dashboard') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition duration-150">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                                </svg>
+                                Go to Dashboard to Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Disabled Registration Form -->
+            <div class="opacity-50 cursor-not-allowed">
+        {% endif %}
+
+        <!-- Registration Form -->
+        <form method="POST" class="space-y-5" {% if existing_registration %}onsubmit="return false;"{% endif %}>
+            
+            <!-- User's Name (EDITABLE) -->
+            <div>
+                <label for="student_name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                <input type="text" id="student_name" name="student_name" 
+                       value="{{ session.get('username', '') }}" 
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                       {% if existing_registration %}disabled{% endif %}
+                       required>
+            </div>
+
+            <!-- User's Email (NOW EDITABLE) -->
+            <div>
+                <label for="student_email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input type="email" id="student_email" name="student_email" 
+                       value="{{ session.get('email', 'user@example.com') }}" 
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                       {% if existing_registration %}disabled{% endif %}
+                       required>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200/50">
+                <!-- Phone Number Input Field (REQUIRED) -->
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        Phone Number <span class="text-red-500">*</span>
+                    </label>
+                    <input type="tel" id="phone" name="phone" 
+                           placeholder="Enter your mobile number" 
+                           class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
+                           {% if existing_registration %}disabled{% endif %}
+                           required>
+                </div>
+
+                <!-- Optional Comments/Special Requests Field -->
+                <div class="mt-5">
+                    <label for="comments" class="block text-sm font-medium text-gray-700 mb-2">
+                        Comments (Optional)
+                    </label>
+                    <textarea id="comments" name="comments" rows="3" 
+                              placeholder="Any special requests or notes..."
+                              class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"
+                              {% if existing_registration %}disabled{% endif %}></textarea>
+                </div>
+            </div>
+
+            <!-- Submission Button -->
+            <button type="submit" 
+                    class="submit-btn w-full py-3 text-white font-semibold text-lg rounded-xl transition duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50"
+                    {% if existing_registration %}disabled{% endif %}>
+                {% if existing_registration %}
+                    Registration Blocked - Already Registered
+                {% else %}
+                    Confirm Registration
+                {% endif %}
+            </button>
+        </form>
+
+        {% if existing_registration %}
+            </div> <!-- Close disabled form wrapper -->
+        {% endif %}
+
+        <!-- Back Link -->
+        <div class="mt-6 text-center">
+            <a href="{{ url_for('view_events') }}" 
+               class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition duration-150 hover:underline">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                {% if existing_registration %}
+                    Go Back to Events
+                {% else %}
+                    Cancel and Go Back to Events
+                {% endif %}
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Prevent form submission if already registered
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const existingRegistration = {{ existing_registration|tojson|safe if existing_registration else 'false' }};
+            
+            if (existingRegistration && form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    alert('You are already registered for another event. ');
+                    return false;
+                });
+                
+                // Make all inputs unclickable
+                const inputs = form.querySelectorAll('input, textarea, button');
+                inputs.forEach(input => {
+                    input.addEventListener('click', function(e) {
+                        if (input.disabled) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

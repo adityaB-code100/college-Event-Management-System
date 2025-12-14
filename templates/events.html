@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Events</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Poppins', 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .close {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        .modal-body {
+            padding: 25px;
+        }
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eef2f7;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+            width: 120px;
+            flex-shrink: 0;
+        }
+        .detail-value {
+            color: #5d6d7e;
+            flex: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 sm:p-8 font-poppins">
+
+    <div class="max-w-7xl mx-auto fade-in">
+        
+        <!-- Header Section -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-3 font-poppins">Available Events</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto font-inter">
+                Discover and register for exciting college events. Expand your horizons and connect with peers.
+            </p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6 space-y-3 max-w-4xl mx-auto">
+                    {% for category, message in messages %}
+                        <div class="p-4 rounded-xl shadow-md flex items-start fade-in font-inter
+                            {% if category == 'success' %} bg-green-50 border-l-4 border-green-500 text-green-700
+                            {% elif category == 'danger' %} bg-red-50 border-l-4 border-red-500 text-red-700
+                            {% else %} bg-blue-50 border-l-4 border-blue-500 text-blue-700
+                            {% endif %}">
+                            <i class="{% if category == 'success' %}fas fa-check-circle
+                                      {% elif category == 'danger' %}fas fa-exclamation-circle
+                                      {% else %}fas fa-info-circle{% endif %} mt-1 mr-3"></i>
+                            <span class="font-medium">{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Events Counter -->
+        <div class="max-w-4xl mx-auto mb-6">
+            <div class="bg-white rounded-xl shadow-md p-4 flex items-center justify-between font-inter">
+                <div class="flex items-center">
+                    <div class="bg-blue-100 p-3 rounded-lg mr-4">
+                        <i class="fas fa-calendar-alt text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <!-- Fixed: Count only active events, not deleted ones -->
+                        <h3 class="font-semibold text-gray-800">
+                            {% set active_events_count = events|length %}
+                            {{ active_events_count }} Active Event{% if active_events_count != 1 %}s{% endif %} Available
+                        </h3>
+                        <p class="text-sm text-gray-600">Register now to secure your spot</p>
+                    </div>
+                </div>
+                {% if current_user and current_user.role == 'admin' %}
+                <a href="{{ url_for('add_event') }}" 
+                   class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center transition duration-200 shadow-lg font-poppins">
+                    <i class="fas fa-plus mr-2"></i> Add New Event
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Event Table Container -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden max-w-4xl mx-auto card-hover font-inter">
+            <div class="gradient-bg px-6 py-4">
+                <h2 class="text-xl font-bold text-white flex items-center font-poppins">
+                    <i class="fas fa-list-ul mr-2"></i> Event Listings
+                </h2>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                                <i class="fas fa-hashtag mr-1"></i> #
+                            </th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                                <i class="fas fa-heading mr-1"></i> Title
+                            </th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider hidden md:table-cell font-poppins">
+                                <i class="fas fa-align-left mr-1"></i> Description
+                            </th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                                <i class="far fa-calendar mr-1"></i> Date
+                            </th>
+                            <th class="px-4 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider hidden sm:table-cell font-poppins">
+                                <i class="fas fa-map-marker-alt mr-1"></i> Location
+                            </th>
+                            <th class="px-4 py-4 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider font-poppins">
+                                <i class="fas fa-cogs mr-1"></i> Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for event in events %}
+                        <tr class="hover:bg-blue-50 transition duration-150 fade-in" style="animation-delay: {{ loop.index * 0.05 }}s;">
+                            <!-- Fixed: Use loop index instead of event.id for consistent numbering -->
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold text-sm font-poppins">
+                                    {{ loop.index }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div class="text-sm font-semibold text-gray-900 font-poppins">{{ event.title }}</div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-600 hidden md:table-cell max-w-xs truncate font-inter">
+                                {{ event.description|default('No description provided', true) }}
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 flex items-center font-inter">
+                                    <i class="far fa-calendar-check text-blue-500 mr-2"></i>
+                                    {{ event.date }}
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 hidden sm:table-cell font-inter">
+                                <div class="flex items-center">
+                                    <i class="fas fa-map-marker-alt text-red-400 mr-2"></i>
+                                    {{ event.location|default('Online', true) }}
+                                </div>
+                            </td>
+                            
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-center font-poppins">
+                                <!-- DYNAMIC ACTION BUTTONS -->
+                                {% if current_user and current_user.role == 'admin' %}
+                                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 justify-center">
+                                        <!-- View Button -->
+                                        <button onclick="showEventDetails({{ event.id }}, '{{ event.title }}', '{{ event.description }}', '{{ event.date }}', '{{ event.location }}')" 
+                                           class="px-4 py-2 text-xs font-semibold rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition duration-200 shadow-md flex items-center justify-center">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </button>
+                                        <a href="{{ url_for('edit_event', event_id=event.id) }}" 
+                                           class="px-4 py-2 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition duration-200 shadow-md flex items-center justify-center">
+                                            <i class="fas fa-edit mr-1"></i> Edit
+                                        </a>
+                                        <a href="{{ url_for('delete_event_confirm', event_id=event.id) }}" 
+                                           class="px-4 py-2 text-xs font-semibold rounded-lg bg-red-500 hover:bg-red-600 text-white transition duration-200 shadow-md flex items-center justify-center">
+                                            <i class="fas fa-trash-alt mr-1"></i> Delete
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 justify-center">
+                                        <!-- View Button for Students -->
+                                        <button onclick="showEventDetails({{ event.id }}, '{{ event.title }}', '{{ event.description }}', '{{ event.date }}', '{{ event.location }}')" 
+                                           class="px-4 py-2 text-xs font-semibold rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition duration-200 shadow-md flex items-center justify-center">
+                                            <i class="fas fa-eye mr-1"></i> View
+                                        </button>
+                                        <a href="{{ url_for('register_event', event_id=event.id) }}" 
+                                           class="px-5 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition duration-200 shadow-lg flex items-center justify-center pulse-animation">
+                                            <i class="fas fa-user-plus mr-2"></i> Register
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center font-inter">
+                                <div class="flex flex-col items-center justify-center text-gray-500">
+                                    <i class="fas fa-calendar-times text-4xl mb-4 text-gray-300"></i>
+                                    <p class="text-lg font-medium mb-2 font-poppins">No events available</p>
+                                    <p class="text-sm">Check back later for new events</p>
+                                    {% if current_user and current_user.role == 'admin' %}
+                                    <a href="{{ url_for('add_event') }}" class="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-200 font-poppins">
+                                        <i class="fas fa-plus mr-2"></i> Create Your First Event
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Back to Dashboard Button -->
+        <div class="mt-8 flex justify-center">
+            <a href="{{ url_for('dashboard') }}" 
+               class="px-8 py-3 text-md font-semibold rounded-xl bg-gradient-to-r from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black text-white transition duration-200 shadow-xl flex items-center font-poppins">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Event Details</h2>
+                <button class="close">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Event details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        const modal = document.getElementById('eventModal');
+        const closeBtn = document.querySelector('.close');
+        const modalBody = document.getElementById('modalBody');
+        
+        // Close modal when clicking X
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Escape key to close modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Show event details in modal
+        function showEventDetails(eventId, title, description, date, location) {
+            // Escape HTML entities to prevent XSS
+            const escapeHtml = (text) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            };
+
+            const safeTitle = escapeHtml(title);
+            const safeDescription = escapeHtml(description || 'No description provided');
+            const safeDate = escapeHtml(date);
+            const safeLocation = escapeHtml(location || 'Online');
+
+            modalBody.innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">Title:</div>
+                    <div class="detail-value font-semibold text-lg text-gray-800">${safeTitle}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Description:</div>
+                    <div class="detail-value">${safeDescription}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Date:</div>
+                    <div class="detail-value">
+                        <i class="far fa-calendar text-blue-500 mr-2"></i>
+                        ${safeDate}
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Location:</div>
+                    <div class="detail-value">
+                        <i class="fas fa-map-marker-alt text-red-400 mr-2"></i>
+                        ${safeLocation}
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Status:</div>
+                    <div class="detail-value">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                            <i class="fas fa-circle mr-1"></i> Active
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end space-x-3">
+                    {% if current_user and current_user.role == 'admin' %}
+                    <a href="/edit_event/${eventId}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition duration-200 shadow-md flex items-center">
+                        <i class="fas fa-edit mr-2"></i> Edit Event
+                    </a>
+                    <a href="/view_registrations/${eventId}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-500 hover:bg-blue-600 text-white transition duration-200 shadow-md flex items-center">
+                        <i class="fas fa-users mr-2"></i> View Registrations
+                    </a>
+                    {% else %}
+                    <a href="/register_event/${eventId}" 
+                       class="px-4 py-2 text-sm font-semibold rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white transition duration-200 shadow-lg flex items-center">
+                        <i class="fas fa-user-plus mr-2"></i> Register Now
+                    </a>
+                    {% endif %}
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        // Add interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click animation to buttons
+            const buttons = document.querySelectorAll('a, button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // Only add effect to action buttons, not navigation
+                    if (this.href && !this.href.includes('dashboard')) {
+                        this.classList.add('transform', 'scale-95');
+                        setTimeout(() => {
+                            this.classList.remove('transform', 'scale-95');
+                        }, 150);
+                    }
+                });
+            });
+            
+            // Add staggered animation to table rows
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.animationDelay = `${index * 0.05}s`;
+            });
+        });
+    </script>
+
+</body>
+</html>

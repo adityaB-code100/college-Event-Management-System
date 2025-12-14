@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+        
+        .notification-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #6e8efb;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item.unread {
+            background: #f8f9fa;
+            border-left-color: #a777e3;
+        }
+        
+        .notification-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .notification-message {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .notification-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        
+        .notification-badge {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        .btn-mark-read {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-box">
+        <div class="notification-header">
+            <h1 class="page-title">Notifications</h1>
+            {% if unread_count > 0 %}
+            <button onclick="markAllAsRead()" class="btn-primary">
+                Mark All as Read
+            </button>
+            {% endif %}
+        </div>
+
+        {% if notifications %}
+            {% for notification in notifications %}
+            <div class="notification-item {% if not notification.is_read %}unread{% endif %}" 
+                 id="notification-{{ notification.id }}">
+                <div class="notification-title">
+                    {{ notification.title }}
+                    {% if not notification.is_read %}
+                    <span class="notification-badge">New</span>
+                    {% endif %}
+                </div>
+                <div class="notification-message">
+                    {{ notification.message }}
+                </div>
+                <div class="notification-meta">
+                    <span>{{ notification.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                    {% if not notification.is_read %}
+                    <button onclick="markAsRead('{{ notification.id }}')" class="btn-mark-read">
+                        Mark Read
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-bell-slash" style="font-size: 3rem; color: #ddd; margin-bottom: 15px;"></i>
+                <h3>No notifications yet</h3>
+                <p>You'll see important updates here when they're available.</p>
+            </div>
+        {% endif %}
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{ url_for('dashboard') }}" class="btn-primary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function markAsRead(notificationId) {
+            fetch(`/notifications/read/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const element = document.getElementById(`notification-${notificationId}`);
+                        if (element) {
+                            element.classList.remove('unread');
+                            const badge = element.querySelector('.notification-badge');
+                            if (badge) badge.remove();
+                            const btn = element.querySelector('.btn-mark-read');
+                            if (btn) btn.remove();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking notification as read:', error);
+                });
+        }
+        
+        function markAllAsRead() {
+            fetch('/notifications/read-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item.unread').forEach(item => {
+                            item.classList.remove('unread');
+                            const badge = item.querySelector('.notification-badge');
+                            if (badge) badge.remove();
+                            const btn = item.querySelector('.btn-mark-read');
+                            if (btn) btn.remove();
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking all notifications as read:', error);
+                });
+        }
+    </script>
+</body>
+</html>

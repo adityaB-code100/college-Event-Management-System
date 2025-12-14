@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Registered Events</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container-box {
+            max-width: 1100px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .page-title {
+            color: #2d3748;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border-radius: 2px;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .flash-message.success {
+            background-color: #e7f7ef;
+            color: #0a7b3c;
+            border-left: 4px solid #0a7b3c;
+        }
+
+        .flash-message.error {
+            background-color: #fde8e8;
+            color: #c53030;
+            border-left: 4px solid #c53030;
+        }
+
+        .flash-message.info {
+            background-color: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #1565c0;
+        }
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .events-table thead {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+        }
+
+        .events-table th {
+            padding: 16px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .events-table td {
+            padding: 16px 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .events-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .events-table tbody tr:hover {
+            background-color: #f9f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.1);
+        }
+
+        .events-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .event-title {
+            font-weight: 700;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+
+        .event-date {
+            color: #6e8efb;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-location {
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-description {
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #777;
+            padding: 50px 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+            background-color: #f9f9f9;
+        }
+
+        .no-events p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .no-events a {
+            color: #6e8efb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .no-events a:hover {
+            color: #a777e3;
+            text-decoration: underline;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 25px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(110, 142, 251, 0.3);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(110, 142, 251, 0.4);
+        }
+
+        .registration-count {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .registration-count i {
+            color: #6e8efb;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container-box {
+                padding: 20px;
+                margin: 15px auto;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .events-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .events-table th, 
+            .events-table td {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-box">
+    <h1 class="page-title">My Event Registrations</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if events %}
+        <div class="registration-count">
+            <i class="fas fa-calendar-check"></i>
+            <span>You've registered for {{ events|length }} event{% if events|length != 1 %}s{% endif %}</span>
+        </div>
+
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event Title</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in events %}
+                <tr>
+                    <td>
+                        <div class="event-title">{{ reg.event.title }}</div>
+                    </td>
+                    <td>
+                        <div class="event-date">
+                            <i class="far fa-calendar"></i>
+                            {{ reg.event.date.strftime('%Y-%m-%d') if reg.event.date else 'N/A' }}
+                        </div>
+                    </td>
+                    <td>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ reg.event.location }}
+                        </div>
+                    </td>
+                    <td class="event-description">
+                        {{ reg.event.description | truncate(70, True) if reg.event.description else 'No description' }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="no-events">
+            <i class="far fa-calendar-times" style="font-size: 3rem; margin-bottom: 15px; color: #c3cfe2;"></i>
+            <p>You have not registered for any events yet.</p>
+            <p>Head over to the <a href="{{ url_for('view_events') }}">Events Page</a> to register for exciting events!</p>
+        </div>
+    {% endif %}
+
+    <a href="{{ url_for('dashboard') }}" class="btn-back">
+        <i class="fas fa-arrow-left"></i>
+        Go to Dashboard
+    </a>
+</div>
+
+<script>
+    // Add subtle animation to table rows
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableRows = document.querySelectorAll('.events-table tbody tr');
+        
+        tableRows.forEach((row, index) => {
+            // Add staggered animation
+            row.style.animationDelay = `${index * 0.1}s`;
+            row.style.animation = 'fadeIn 0.5s ease forwards';
+            row.style.opacity = '0';
+        });
+        
+        // Add click effect to table rows
+        tableRows.forEach(row => {
+            row.addEventListener('click', function() {
+                this.style.transform = 'scale(0.99)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

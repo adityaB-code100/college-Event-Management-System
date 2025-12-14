@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Event</title>
+</head>
+<body>
+    <h2>Create Event</h2>
+    <form action="/create-event" method="POST">
+        Title: <input type="text" name="title" required><br><br>
+        Description: <textarea name="description" required></textarea><br><br>
+        Date: <input type="date" name="date" required><br><br>
+        <input type="submit" value="Create Event">
+    </form>
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+</body>
+</html>

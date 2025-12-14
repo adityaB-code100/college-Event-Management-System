@@ -1,6 +1,0 @@
-# Production requirements
--r requirements.txt
-
-# Development/testing dependencies
-pytest>=6.0.0
-pytest-flask>=1.0.0

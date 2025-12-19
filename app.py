@@ -48,7 +48,7 @@ else:
     }
 
 # # Global connection variable
-# _db_connection = None
+_db_connection = None
 
 # def get_db_connection():
 #     """

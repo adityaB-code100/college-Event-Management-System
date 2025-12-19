@@ -47,114 +47,114 @@ else:
         'password': os.environ.get('MONGODB_PASSWORD', '')
     }
 
-# Global connection variable
-_db_connection = None
-
-def get_db_connection():
-    """
-    Establishes a connection to the MongoDB database.
-    Returns the database object.
-    """
-    global _db_connection
-    try:
-        if _db_connection is None:
-            # Create MongoDB client
-            if MONGO_CONFIG['username'] and MONGO_CONFIG['password']:
-                client = MongoClient(
-                    host=MONGO_CONFIG['host'],
-                    port=MONGO_CONFIG['port'],
-                    username=MONGO_CONFIG['username'],
-                    password=MONGO_CONFIG['password']
-                )
-            else:
-                client = MongoClient(
-                    host=MONGO_CONFIG['host'],
-                    port=MONGO_CONFIG['port']
-                )
-            
-            _db_connection = client[MONGO_CONFIG['database']]
-            logging.info("Connected to MongoDB database")
-        
-        return _db_connection
-    except Exception as e:
-        logging.error(f"Database Connection Error: {e}")
-        flash("Could not connect to the database. Please check server status.", "danger")
-        return None
+# # Global connection variable
+# _db_connection = None
 
 # def get_db_connection():
 #     """
-#     Establishes a connection to MongoDB (supports both local and Atlas).
+#     Establishes a connection to the MongoDB database.
 #     Returns the database object.
 #     """
 #     global _db_connection
 #     try:
 #         if _db_connection is None:
-#             # Check for MongoDB Atlas connection string in environment variable (preferred)
-#             mongo_uri = os.environ.get('MONGODB_URI')
-            
-#             if mongo_uri:
-#                 # Use connection string from environment variable
-#                 # Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-#                 client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-#                 # Extract database name from URI or use default
-#                 db_name = os.environ.get('MONGODB_DATABASE', 'college_events')
-#                 _db_connection = client[db_name]
-#                 logging.info("Connected to MongoDB Atlas using connection string")
+#             # Create MongoDB client
+#             if MONGO_CONFIG['username'] and MONGO_CONFIG['password']:
+#                 client = MongoClient(
+#                     host=MONGO_CONFIG['host'],
+#                     port=MONGO_CONFIG['port'],
+#                     username=MONGO_CONFIG['username'],
+#                     password=MONGO_CONFIG['password']
+#                 )
 #             else:
-#                 # Check config.json for MongoDB Atlas connection string
-#                 if 'connection_string' in MONGO_CONFIG:
-#                     # Use connection string from config.json
-#                     client = MongoClient(MONGO_CONFIG['connection_string'], serverSelectionTimeoutMS=5000)
-#                     db_name = MONGO_CONFIG.get('database', 'college_events')
-#                     _db_connection = client[db_name]
-#                     logging.info("Connected to MongoDB Atlas using config.json connection string")
-#                 else:
-#                     # Fallback to individual connection parameters (local or Atlas)
-#                     host = MONGO_CONFIG.get('host', 'localhost')
-#                     port = MONGO_CONFIG.get('port', 27017)
-#                     username = MONGO_CONFIG.get('username', '')
-#                     password = MONGO_CONFIG.get('password', '')
-#                     database = MONGO_CONFIG.get('database', 'college_events')
-                    
-#                     # Check if it's an Atlas host (contains .mongodb.net)
-#                     if '.mongodb.net' in host:
-#                         # MongoDB Atlas - use mongodb+srv:// protocol
-#                         if username and password:
-#                             connection_string = f"mongodb+srv://{username}:{password}@{host}/{database}?retryWrites=true&w=majority"
-#                         else:
-#                             connection_string = f"mongodb+srv://{host}/{database}?retryWrites=true&w=majority"
-#                         client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
-#                         _db_connection = client[database]
-#                         logging.info("Connected to MongoDB Atlas using individual parameters")
-#                     else:
-#                         # Local MongoDB
-#                         if username and password:
-#                             client = MongoClient(
-#                                 host=host,
-#                                 port=port,
-#                                 username=username,
-#                                 password=password,
-#                                 serverSelectionTimeoutMS=5000
-#                             )
-#                         else:
-#                             client = MongoClient(
-#                                 host=host,
-#                                 port=port,
-#                                 serverSelectionTimeoutMS=5000
-#                             )
-#                         _db_connection = client[database]
-#                         logging.info(f"Connected to local MongoDB at {host}:{port}")
+#                 client = MongoClient(
+#                     host=MONGO_CONFIG['host'],
+#                     port=MONGO_CONFIG['port']
+#                 )
             
-#             # Test the connection
-#             _db_connection.client.admin.command('ping')
-#             logging.info("Database connection verified successfully")
+#             _db_connection = client[MONGO_CONFIG['database']]
+#             logging.info("Connected to MongoDB database")
         
 #         return _db_connection
 #     except Exception as e:
 #         logging.error(f"Database Connection Error: {e}")
-#         _db_connection = None  # Reset connection on error
 #         flash("Could not connect to the database. Please check server status.", "danger")
 #         return None
+
+def get_db_connection():
+    """
+    Establishes a connection to MongoDB (supports both local and Atlas).
+    Returns the database object.
+    """
+    global _db_connection
+    try:
+        if _db_connection is None:
+            # Check for MongoDB Atlas connection string in environment variable (preferred)
+            mongo_uri = os.environ.get('MONGODB_URI')
+            
+            if mongo_uri:
+                # Use connection string from environment variable
+                # Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+                client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+                # Extract database name from URI or use default
+                db_name = os.environ.get('MONGODB_DATABASE', 'college_events')
+                _db_connection = client[db_name]
+                logging.info("Connected to MongoDB Atlas using connection string")
+            else:
+                # Check config.json for MongoDB Atlas connection string
+                if 'connection_string' in MONGO_CONFIG:
+                    # Use connection string from config.json
+                    client = MongoClient(MONGO_CONFIG['connection_string'], serverSelectionTimeoutMS=5000)
+                    db_name = MONGO_CONFIG.get('database', 'college_events')
+                    _db_connection = client[db_name]
+                    logging.info("Connected to MongoDB Atlas using config.json connection string")
+                else:
+                    # Fallback to individual connection parameters (local or Atlas)
+                    host = MONGO_CONFIG.get('host', 'localhost')
+                    port = MONGO_CONFIG.get('port', 27017)
+                    username = MONGO_CONFIG.get('username', '')
+                    password = MONGO_CONFIG.get('password', '')
+                    database = MONGO_CONFIG.get('database', 'college_events')
+                    
+                    # Check if it's an Atlas host (contains .mongodb.net)
+                    if '.mongodb.net' in host:
+                        # MongoDB Atlas - use mongodb+srv:// protocol
+                        if username and password:
+                            connection_string = f"mongodb+srv://{username}:{password}@{host}/{database}?retryWrites=true&w=majority"
+                        else:
+                            connection_string = f"mongodb+srv://{host}/{database}?retryWrites=true&w=majority"
+                        client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+                        _db_connection = client[database]
+                        logging.info("Connected to MongoDB Atlas using individual parameters")
+                    else:
+                        # Local MongoDB
+                        if username and password:
+                            client = MongoClient(
+                                host=host,
+                                port=port,
+                                username=username,
+                                password=password,
+                                serverSelectionTimeoutMS=5000
+                            )
+                        else:
+                            client = MongoClient(
+                                host=host,
+                                port=port,
+                                serverSelectionTimeoutMS=5000
+                            )
+                        _db_connection = client[database]
+                        logging.info(f"Connected to local MongoDB at {host}:{port}")
+            
+            # Test the connection
+            _db_connection.client.admin.command('ping')
+            logging.info("Database connection verified successfully")
+        
+        return _db_connection
+    except Exception as e:
+        logging.error(f"Database Connection Error: {e}")
+        _db_connection = None  # Reset connection on error
+        flash("Could not connect to the database. Please check server status.", "danger")
+        return None
 
 # ==================== NOTIFICATION FUNCTIONS ====================
 

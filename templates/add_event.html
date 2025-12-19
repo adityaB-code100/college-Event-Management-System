@@ -1,314 +1,661 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Add Event</title>
-  <style>
-    /* Base styles */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    body {
-      background: linear-gradient(135deg, #6e8efb, #a777e3);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    
-    .container-box {
-      background-color: white;
-      border-radius: 15px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-      padding: 40px;
-      width: 100%;
-      max-width: 600px;
-    }
-    
-    .page-title {
-      text-align: center;
-      color: #333;
-      margin-bottom: 30px;
-      font-weight: 600;
-      font-size: 32px;
-      position: relative;
-    }
-    
-    .page-title::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 4px;
-      background: linear-gradient(to right, #6e8efb, #a777e3);
-      border-radius: 2px;
-    }
-    
-    /* Flash messages */
-    .flash-message {
-      padding: 15px 20px;
-      border-radius: 10px;
-      margin-bottom: 25px;
-      font-weight: 500;
-      text-align: center;
-    }
-    
-    .flash-message.success {
-      background: linear-gradient(135deg, #e7f7ef, #d4edda);
-      color: #155724;
-      border-left: 4px solid #28a745;
-    }
-    
-    .flash-message.error {
-      background: linear-gradient(135deg, #fde8e8, #f8d7da);
-      color: #721c24;
-      border-left: 4px solid #dc3545;
-    }
-    
-    .flash-message.info {
-      background: linear-gradient(135deg, #e0f2fe, #d1ecf1);
-      color: #0369a1;
-      border-left: 4px solid #17a2b8;
-    }
-    
-    .flash-message.warning {
-      background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-      color: #856404;
-      border-left: 4px solid #ffc107;
-    }
-    
-    /* Form styles */
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-    
-    label {
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #444;
-      font-size: 16px;
-    }
-    
-    input, textarea {
-      padding: 14px 15px;
-      margin-bottom: 25px;
-      border: 2px solid #e1e5e9;
-      border-radius: 10px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      width: 100%;
-    }
-    
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #6e8efb;
-      box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
-    }
-    
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-      font-family: inherit;
-    }
-    
-    /* Date validation styles */
-    .date-error {
-      color: #dc3545;
-      font-size: 14px;
-      margin-top: -20px;
-      margin-bottom: 25px;
-      display: none;
-    }
-    
-    .duplicate-error {
-      color: #dc3545;
-      font-size: 14px;
-      margin-top: -20px;
-      margin-bottom: 25px;
-      display: none;
-    }
-    
-    input.invalid {
-      border-color: #dc3545;
-      background-color: #fdf2f2;
-    }
-    
-    /* Button styles */
-    .btn-success {
-      background: linear-gradient(to right, #28a745, #20c997);
-      color: white;
-      border: none;
-      padding: 16px;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 10px;
-      width: 100%;
-      box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
-    }
-    
-    .btn-success:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 20px rgba(40, 167, 69, 0.4);
-    }
-    
-    .btn-success:disabled {
-      background: #cccccc;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    
-    .btn-primary {
-      display: inline-block;
-      background: linear-gradient(to right, #6e8efb, #a777e3);
-      color: white;
-      padding: 12px 25px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      text-align: center;
-      margin-top: 15px;
-      box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
-      color: white;
-      text-decoration: none;
-    }
-    
-    /* Responsive design */
-    @media (max-width: 768px) {
-      .container-box {
-        padding: 30px 25px;
-      }
-      
-      .page-title {
-        font-size: 28px;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .container-box {
-        padding: 25px 20px;
-      }
-      
-      .page-title {
-        font-size: 24px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Event</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container-box {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .page-title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 32px;
+            position: relative;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border-radius: 2px;
+        }
+        
+        /* Flash messages */
+        .flash-message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .flash-message.success {
+            background: linear-gradient(135deg, #e7f7ef, #d4edda);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        
+        .flash-message.error {
+            background: linear-gradient(135deg, #fde8e8, #f8d7da);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .flash-message.info {
+            background: linear-gradient(135deg, #e0f2fe, #d1ecf1);
+            color: #0369a1;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .flash-message.warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        
+        /* Form styles */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 16px;
+        }
+        
+        label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        
+        input, textarea {
+            padding: 14px 15px;
+            margin-bottom: 25px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #6e8efb;
+            box-shadow: 0 0 0 3px rgba(110, 142, 251, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* DateTime row */
+        .datetime-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .datetime-row > div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* AM/PM Time row */
+        .time-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .time-row input[type="number"] {
+            flex: 1;
+            text-align: center;
+            margin-bottom: 0;
+        }
+        
+        .time-separator {
+            font-size: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .ampm-select {
+            flex: 0.8;
+            margin-bottom: 0;
+        }
+        
+        /* Location suggestions */
+        .location-suggestions {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: calc(100% - 30px);
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .location-suggestion {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .location-suggestion:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Form groups with relative positioning for suggestions */
+        .form-group {
+            position: relative;
+        }
+        
+        /* Date validation styles */
+        .date-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .datetime-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .duplicate-error {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        input.invalid {
+            border-color: #dc3545;
+            background-color: #fdf2f2;
+        }
+        
+        /* Button styles */
+        .btn-success {
+            background: linear-gradient(to right, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: 0 8px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .btn-success:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        /* Form hint */
+        .form-hint {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container-box {
+                padding: 30px 25px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+            
+            .datetime-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .time-row {
+                gap: 5px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container-box {
+                padding: 25px 20px;
+            }
+            
+            .page-title {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container-box">
-  <h1 class="page-title">Add New Event</h1>
+    <h1 class="page-title">➕ Add New Event</h1>
 
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% for category, message in messages %}
-      <div class="flash-message {{ category }}">{{ message }}</div>
-    {% endfor %}
-  {% endwith %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
 
-  <form method="POST" id="eventForm">
-    <label>Title</label>
-    <input type="text" name="title" id="eventTitle" required placeholder="Enter event title">
-
-    <label>Description</label>
-    <textarea name="description" id="eventDescription" placeholder="Enter event description (optional)"></textarea>
-
-    <label>Date</label>
-    <input type="date" name="date" id="eventDate" required>
-    <div class="date-error" id="dateError">Event date cannot be in the past</div>
-
-    <label>Location</label>
-    <input type="text" name="location" id="eventLocation" placeholder="Enter event location (optional)">
-
-    <div class="duplicate-error" id="duplicateError">
-      An event with the same title, date, and location already exists!
-    </div>
-
-    <button type="submit" class="btn-success" id="submitBtn">Add Event</button>
-  </form>
-
-  <p style="text-align:center;margin-top:15px;">
-    <a href="{{ url_for('dashboard') }}" class="btn-primary">Back to Dashboard</a>
-  </p>
+    <form method="POST" id="eventForm">
+        <!-- Event Title -->
+        <div class="form-group">
+            <label for="eventTitle" class="required">Event Title</label>
+            <input type="text" name="title" id="eventTitle" required placeholder="Enter event title">
+        </div>
+        
+        <!-- Event Description -->
+        <div class="form-group">
+            <label for="eventDescription">Description</label>
+            <textarea name="description" id="eventDescription" placeholder="Enter event description (optional)"></textarea>
+        </div>
+        
+        <!-- DATE & TIME SECTION -->
+        <label class="required">Event Date & Time</label>
+        <div class="datetime-row">
+            <div class="form-group">
+                <label for="eventDate" style="font-size: 14px; color: #666;">Date *</label>
+                <input type="date" name="date" id="eventDate" required>
+            </div>
+            <div class="form-group">
+                <label style="font-size: 14px; color: #666;">Time *</label>
+                <div class="time-row">
+                    <!-- Hours -->
+                    <input type="number" name="hour" id="eventHour" min="1" max="12" value="10" required>
+                    <span class="time-separator">:</span>
+                    <!-- Minutes -->
+                    <input type="number" name="minute" id="eventMinute" min="0" max="59" value="00" required>
+                    <!-- AM/PM -->
+                    <select name="ampm" id="eventAmPm" class="ampm-select" required>
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="datetime-error" id="datetimeError">⚠️ Event date and time cannot be in the past</div>
+        <div class="form-hint">Select a future date and time for your event</div>
+        
+        <!-- Location - TEXT INPUT (not dropdown) -->
+        <div class="form-group">
+            <label for="eventLocation" class="required">Location</label>
+            <input type="text" name="location" id="eventLocation" required 
+                   placeholder="Enter event location (e.g., Exhibition Hall, Room 101)">
+            <div id="locationSuggestions" class="location-suggestions">
+                <!-- Suggestions will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Common location suggestions (optional to show) -->
+        <div class="form-hint">
+            Common locations: Exhibition Hall, College Auditorium, Seminar Hall, Computer Lab, Sports Complex
+        </div>
+        
+        <!-- Duplicate Error Message -->
+        <div class="duplicate-error" id="duplicateError">
+            ⚠️ An event with the same title, date, and location already exists!
+        </div>
+        
+        <!-- Hidden field for 24-hour time format (for backend processing) -->
+        <input type="hidden" name="time" id="hiddenTime">
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn-success" id="submitBtn">
+            <span id="btnText">➕ Add Event</span>
+            <span id="btnLoading" style="display: none;">⏳ Adding...</span>
+        </button>
+    </form>
+    
+    <p style="text-align:center;margin-top:15px;">
+        <a href="{{ url_for('dashboard') }}" class="btn-primary">← Back to Dashboard</a>
+    </p>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.getElementById('eventDate');
-    const dateError = document.getElementById('dateError');
-    const duplicateError = document.getElementById('duplicateError');
-    const submitBtn = document.getElementById('submitBtn');
-    const eventForm = document.getElementById('eventForm');
-    const eventTitle = document.getElementById('eventTitle');
-    const eventLocation = document.getElementById('eventLocation');
-    
-    // Set min date to today
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const minDate = `${yyyy}-${mm}-${dd}`;
-    
-    dateInput.setAttribute('min', minDate);
-    
-    // Validate date on input change
-    dateInput.addEventListener('change', validateDate);
-    
-    // Validate form on submit
-    eventForm.addEventListener('submit', function(e) {
-      if (!validateDate()) {
-        e.preventDefault();
-        dateError.style.display = 'block';
-        dateInput.classList.add('invalid');
-        submitBtn.disabled = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateInput = document.getElementById('eventDate');
+        const hourInput = document.getElementById('eventHour');
+        const minuteInput = document.getElementById('eventMinute');
+        const ampmInput = document.getElementById('eventAmPm');
+        const hiddenTimeInput = document.getElementById('hiddenTime');
+        const locationInput = document.getElementById('eventLocation');
+        const locationSuggestions = document.getElementById('locationSuggestions');
+        const datetimeError = document.getElementById('datetimeError');
+        const duplicateError = document.getElementById('duplicateError');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnLoading = document.getElementById('btnLoading');
+        const eventForm = document.getElementById('eventForm');
         
-        // Re-enable button after 2 seconds
-        setTimeout(() => {
-          submitBtn.disabled = false;
-        }, 2000);
-      }
+        // Common location suggestions
+        const commonLocations = [
+            "Exhibition Hall",
+            "College Auditorium",
+            "Open Ground / Main Stage Area",
+            "Seminar Hall & Computer Labs",
+            "Computer Laboratory",
+            "Sports Complex",
+            "Library Conference Room",
+            "Classroom Block A",
+            "Classroom Block B",
+            "Student Activity Center",
+            "Outdoor Stadium",
+            "Room 101",
+            "Room 102",
+            "Room 201",
+            "Room 202",
+            "Lecture Hall 1",
+            "Lecture Hall 2",
+            "Chemistry Lab",
+            "Physics Lab",
+            "Biology Lab"
+        ];
+        
+        // Set min date to today
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const minDate = `${yyyy}-${mm}-${dd}`;
+        
+        dateInput.setAttribute('min', minDate);
+        dateInput.value = minDate; // Set default to today
+        
+        // Format minute input to always show 2 digits
+        minuteInput.addEventListener('change', function() {
+            if (this.value < 10) {
+                this.value = this.value.toString().padStart(2, '0');
+            }
+            if (this.value > 59) {
+                this.value = '59';
+            }
+            if (this.value < 0) {
+                this.value = '00';
+            }
+        });
+        
+        // Format hour input
+        hourInput.addEventListener('change', function() {
+            if (this.value < 1) {
+                this.value = '1';
+            }
+            if (this.value > 12) {
+                this.value = '12';
+            }
+        });
+        
+        // Location autocomplete functionality
+        locationInput.addEventListener('input', function() {
+            const value = this.value.toLowerCase();
+            
+            if (value.length < 2) {
+                locationSuggestions.style.display = 'none';
+                return;
+            }
+            
+            // Filter suggestions
+            const filtered = commonLocations.filter(location => 
+                location.toLowerCase().includes(value)
+            );
+            
+            // Show suggestions
+            if (filtered.length > 0) {
+                locationSuggestions.innerHTML = filtered.map(location => 
+                    `<div class="location-suggestion" data-location="${location}">${location}</div>`
+                ).join('');
+                locationSuggestions.style.display = 'block';
+            } else {
+                locationSuggestions.style.display = 'none';
+            }
+        });
+        
+        // Handle suggestion click
+        locationSuggestions.addEventListener('click', function(e) {
+            if (e.target.classList.contains('location-suggestion')) {
+                locationInput.value = e.target.dataset.location;
+                locationSuggestions.style.display = 'none';
+            }
+        });
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!locationInput.contains(e.target) && !locationSuggestions.contains(e.target)) {
+                locationSuggestions.style.display = 'none';
+            }
+        });
+        
+        // Convert AM/PM to 24-hour format for backend
+        function convertTo24Hour(hour, minute, ampm) {
+            let hour24 = parseInt(hour);
+            
+            if (ampm === 'PM' && hour24 !== 12) {
+                hour24 += 12;
+            } else if (ampm === 'AM' && hour24 === 12) {
+                hour24 = 0;
+            }
+            
+            // Format to 2 digits
+            const hourStr = hour24.toString().padStart(2, '0');
+            const minuteStr = minute.toString().padStart(2, '0');
+            
+            return `${hourStr}:${minuteStr}`;
+        }
+        
+        // Update hidden time field before form submission
+        eventForm.addEventListener('submit', function(e) {
+            // Convert AM/PM to 24-hour format
+            const hour24 = convertTo24Hour(hourInput.value, minuteInput.value, ampmInput.value);
+            hiddenTimeInput.value = hour24;
+            
+            // Validate location is not empty
+            if (!locationInput.value.trim()) {
+                e.preventDefault();
+                locationInput.classList.add('invalid');
+                locationInput.focus();
+                return;
+            }
+            
+            // Validate date/time
+            if (!validateDateTime()) {
+                e.preventDefault();
+                datetimeError.style.display = 'block';
+                dateInput.classList.add('invalid');
+                submitBtn.disabled = true;
+                
+                // Scroll to error
+                datetimeError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Re-enable button after 2 seconds
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                }, 2000);
+            } else {
+                // Show loading state
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+                submitBtn.disabled = true;
+            }
+        });
+        
+        function validateDateTime() {
+            const selectedDate = dateInput.value;
+            const hour = hourInput.value;
+            const minute = minuteInput.value;
+            const ampm = ampmInput.value;
+            
+            if (!selectedDate || !hour || !minute || !ampm) return true;
+            
+            // Convert to 24-hour format for comparison
+            const time24 = convertTo24Hour(hour, minute, ampm);
+            const selectedDateTime = new Date(`${selectedDate}T${time24}`);
+            const now = new Date();
+            
+            // Add 5 minute buffer
+            const bufferTime = new Date(now.getTime() + 5 * 60 * 1000);
+            
+            if (selectedDateTime < bufferTime) {
+                datetimeError.style.display = 'block';
+                dateInput.classList.add('invalid');
+                hourInput.classList.add('invalid');
+                minuteInput.classList.add('invalid');
+                ampmInput.classList.add('invalid');
+                return false;
+            } else {
+                datetimeError.style.display = 'none';
+                dateInput.classList.remove('invalid');
+                hourInput.classList.remove('invalid');
+                minuteInput.classList.remove('invalid');
+                ampmInput.classList.remove('invalid');
+                return true;
+            }
+        }
+        
+        // Hide error when user changes inputs
+        dateInput.addEventListener('input', function() {
+            if (validateDateTime()) {
+                datetimeError.style.display = 'none';
+                dateInput.classList.remove('invalid');
+                hourInput.classList.remove('invalid');
+                minuteInput.classList.remove('invalid');
+                ampmInput.classList.remove('invalid');
+            }
+        });
+        
+        hourInput.addEventListener('input', function() {
+            if (validateDateTime()) {
+                datetimeError.style.display = 'none';
+                dateInput.classList.remove('invalid');
+                hourInput.classList.remove('invalid');
+                minuteInput.classList.remove('invalid');
+                ampmInput.classList.remove('invalid');
+            }
+        });
+        
+        minuteInput.addEventListener('input', function() {
+            if (validateDateTime()) {
+                datetimeError.style.display = 'none';
+                dateInput.classList.remove('invalid');
+                hourInput.classList.remove('invalid');
+                minuteInput.classList.remove('invalid');
+                ampmInput.classList.remove('invalid');
+            }
+        });
+        
+        ampmInput.addEventListener('change', function() {
+            if (validateDateTime()) {
+                datetimeError.style.display = 'none';
+                dateInput.classList.remove('invalid');
+                hourInput.classList.remove('invalid');
+                minuteInput.classList.remove('invalid');
+                ampmInput.classList.remove('invalid');
+            }
+        });
+        
+        // Location validation
+        locationInput.addEventListener('input', function() {
+            if (this.value.trim()) {
+                this.classList.remove('invalid');
+            }
+        });
+        
+        // Prefill tomorrow's date if today is too late
+        const currentHour = today.getHours();
+        if (currentHour >= 20) { // If it's 8 PM or later, suggest tomorrow
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowYYYY = tomorrow.getFullYear();
+            const tomorrowMM = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const tomorrowDD = String(tomorrow.getDate()).padStart(2, '0');
+            dateInput.value = `${tomorrowYYYY}-${tomorrowMM}-${tomorrowDD}`;
+        }
+        
+        // Set default time to 10:00 AM
+        hourInput.value = "10";
+        minuteInput.value = "00";
+        ampmInput.value = "AM";
     });
-    
-    function validateDate() {
-      const selectedDate = new Date(dateInput.value);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      if (selectedDate < today) {
-        dateError.style.display = 'block';
-        dateInput.classList.add('invalid');
-        return false;
-      } else {
-        dateError.style.display = 'none';
-        dateInput.classList.remove('invalid');
-        return true;
-      }
-    }
-    
-    // Hide error when user starts typing
-    dateInput.addEventListener('input', function() {
-      if (validateDate()) {
-        dateError.style.display = 'none';
-        dateInput.classList.remove('invalid');
-      }
-    });
-  });
 </script>
 </body>
 </html>

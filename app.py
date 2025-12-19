@@ -50,111 +50,111 @@ else:
 # Global connection variable
 _db_connection = None
 
-# def get_db_connection():
-#     """
-#     Establishes a connection to the MongoDB database.
-#     Returns the database object.
-#     """
-#     global _db_connection
-#     try:
-#         if _db_connection is None:
-#             # Create MongoDB client
-#             if MONGO_CONFIG['username'] and MONGO_CONFIG['password']:
-#                 client = MongoClient(
-#                     host=MONGO_CONFIG['host'],
-#                     port=MONGO_CONFIG['port'],
-#                     username=MONGO_CONFIG['username'],
-#                     password=MONGO_CONFIG['password']
-#                 )
-#             else:
-#                 client = MongoClient(
-#                     host=MONGO_CONFIG['host'],
-#                     port=MONGO_CONFIG['port']
-#                 )
-            
-#             _db_connection = client[MONGO_CONFIG['database']]
-#             logging.info("Connected to MongoDB database")
-        
-#         return _db_connection
-#     except Exception as e:
-#         logging.error(f"Database Connection Error: {e}")
-#         flash("Could not connect to the database. Please check server status.", "danger")
-#         return None
-
 def get_db_connection():
     """
-    Establishes a connection to MongoDB (supports both local and Atlas).
+    Establishes a connection to the MongoDB database.
     Returns the database object.
     """
     global _db_connection
     try:
         if _db_connection is None:
-            # Check for MongoDB Atlas connection string in environment variable (preferred)
-            mongo_uri = os.environ.get('MONGODB_URI')
-            
-            if mongo_uri:
-                # Use connection string from environment variable
-                # Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
-                client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-                # Extract database name from URI or use default
-                db_name = os.environ.get('MONGODB_DATABASE', 'college_events')
-                _db_connection = client[db_name]
-                logging.info("Connected to MongoDB Atlas using connection string")
+            # Create MongoDB client
+            if MONGO_CONFIG['username'] and MONGO_CONFIG['password']:
+                client = MongoClient(
+                    host=MONGO_CONFIG['host'],
+                    port=MONGO_CONFIG['port'],
+                    username=MONGO_CONFIG['username'],
+                    password=MONGO_CONFIG['password']
+                )
             else:
-                # Check config.json for MongoDB Atlas connection string
-                if 'connection_string' in MONGO_CONFIG:
-                    # Use connection string from config.json
-                    client = MongoClient(MONGO_CONFIG['connection_string'], serverSelectionTimeoutMS=5000)
-                    db_name = MONGO_CONFIG.get('database', 'college_events')
-                    _db_connection = client[db_name]
-                    logging.info("Connected to MongoDB Atlas using config.json connection string")
-                else:
-                    # Fallback to individual connection parameters (local or Atlas)
-                    host = MONGO_CONFIG.get('host', 'localhost')
-                    port = MONGO_CONFIG.get('port', 27017)
-                    username = MONGO_CONFIG.get('username', '')
-                    password = MONGO_CONFIG.get('password', '')
-                    database = MONGO_CONFIG.get('database', 'college_events')
-                    
-                    # Check if it's an Atlas host (contains .mongodb.net)
-                    if '.mongodb.net' in host:
-                        # MongoDB Atlas - use mongodb+srv:// protocol
-                        if username and password:
-                            connection_string = f"mongodb+srv://{username}:{password}@{host}/{database}?retryWrites=true&w=majority"
-                        else:
-                            connection_string = f"mongodb+srv://{host}/{database}?retryWrites=true&w=majority"
-                        client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
-                        _db_connection = client[database]
-                        logging.info("Connected to MongoDB Atlas using individual parameters")
-                    else:
-                        # Local MongoDB
-                        if username and password:
-                            client = MongoClient(
-                                host=host,
-                                port=port,
-                                username=username,
-                                password=password,
-                                serverSelectionTimeoutMS=5000
-                            )
-                        else:
-                            client = MongoClient(
-                                host=host,
-                                port=port,
-                                serverSelectionTimeoutMS=5000
-                            )
-                        _db_connection = client[database]
-                        logging.info(f"Connected to local MongoDB at {host}:{port}")
+                client = MongoClient(
+                    host=MONGO_CONFIG['host'],
+                    port=MONGO_CONFIG['port']
+                )
             
-            # Test the connection
-            _db_connection.client.admin.command('ping')
-            logging.info("Database connection verified successfully")
+            _db_connection = client[MONGO_CONFIG['database']]
+            logging.info("Connected to MongoDB database")
         
         return _db_connection
     except Exception as e:
         logging.error(f"Database Connection Error: {e}")
-        _db_connection = None  # Reset connection on error
         flash("Could not connect to the database. Please check server status.", "danger")
         return None
+
+# def get_db_connection():
+#     """
+#     Establishes a connection to MongoDB (supports both local and Atlas).
+#     Returns the database object.
+#     """
+#     global _db_connection
+#     try:
+#         if _db_connection is None:
+#             # Check for MongoDB Atlas connection string in environment variable (preferred)
+#             mongo_uri = os.environ.get('MONGODB_URI')
+            
+#             if mongo_uri:
+#                 # Use connection string from environment variable
+#                 # Format: mongodb+srv://username:password@cluster.mongodb.net/database?retryWrites=true&w=majority
+#                 client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+#                 # Extract database name from URI or use default
+#                 db_name = os.environ.get('MONGODB_DATABASE', 'college_events')
+#                 _db_connection = client[db_name]
+#                 logging.info("Connected to MongoDB Atlas using connection string")
+#             else:
+#                 # Check config.json for MongoDB Atlas connection string
+#                 if 'connection_string' in MONGO_CONFIG:
+#                     # Use connection string from config.json
+#                     client = MongoClient(MONGO_CONFIG['connection_string'], serverSelectionTimeoutMS=5000)
+#                     db_name = MONGO_CONFIG.get('database', 'college_events')
+#                     _db_connection = client[db_name]
+#                     logging.info("Connected to MongoDB Atlas using config.json connection string")
+#                 else:
+#                     # Fallback to individual connection parameters (local or Atlas)
+#                     host = MONGO_CONFIG.get('host', 'localhost')
+#                     port = MONGO_CONFIG.get('port', 27017)
+#                     username = MONGO_CONFIG.get('username', '')
+#                     password = MONGO_CONFIG.get('password', '')
+#                     database = MONGO_CONFIG.get('database', 'college_events')
+                    
+#                     # Check if it's an Atlas host (contains .mongodb.net)
+#                     if '.mongodb.net' in host:
+#                         # MongoDB Atlas - use mongodb+srv:// protocol
+#                         if username and password:
+#                             connection_string = f"mongodb+srv://{username}:{password}@{host}/{database}?retryWrites=true&w=majority"
+#                         else:
+#                             connection_string = f"mongodb+srv://{host}/{database}?retryWrites=true&w=majority"
+#                         client = MongoClient(connection_string, serverSelectionTimeoutMS=5000)
+#                         _db_connection = client[database]
+#                         logging.info("Connected to MongoDB Atlas using individual parameters")
+#                     else:
+#                         # Local MongoDB
+#                         if username and password:
+#                             client = MongoClient(
+#                                 host=host,
+#                                 port=port,
+#                                 username=username,
+#                                 password=password,
+#                                 serverSelectionTimeoutMS=5000
+#                             )
+#                         else:
+#                             client = MongoClient(
+#                                 host=host,
+#                                 port=port,
+#                                 serverSelectionTimeoutMS=5000
+#                             )
+#                         _db_connection = client[database]
+#                         logging.info(f"Connected to local MongoDB at {host}:{port}")
+            
+#             # Test the connection
+#             _db_connection.client.admin.command('ping')
+#             logging.info("Database connection verified successfully")
+        
+#         return _db_connection
+#     except Exception as e:
+#         logging.error(f"Database Connection Error: {e}")
+#         _db_connection = None  # Reset connection on error
+#         flash("Could not connect to the database. Please check server status.", "danger")
+#         return None
 
 # ==================== NOTIFICATION FUNCTIONS ====================
 
@@ -405,79 +405,129 @@ def register():
     return render_template('register.html')
 
 # ---------------- ADD EVENT -----------------
-@app.route('/add-event', methods=['GET', 'POST'])
+# ---------------- ADD EVENT -----------------
+@app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
     if 'user_id' not in session or session.get('role') != 'admin':
-        flash("Access denied.", "danger")
+        flash("Access denied. Only administrators can add events.", "danger")
         return redirect(url_for('dashboard'))
-
+    
     if request.method == 'POST':
+        # Get form data
         title = request.form.get('title', '').strip()
         description = request.form.get('description', '').strip()
         date = request.form.get('date', '').strip()
+        hour = request.form.get('hour', '').strip()
+        minute = request.form.get('minute', '').strip()
+        ampm = request.form.get('ampm', '').strip()
         location = request.form.get('location', '').strip()
-        created_by = session.get('user_id')
-
-        if not title or not date:
-            flash("Title and Date are required!", "danger")
-            return redirect(url_for('add_event'))
-
-        # Check if date is in the past
-        event_date = datetime.strptime(date, '%Y-%m-%d').date()
-        today = datetime.now().date()
-        if event_date < today:
-            flash("Event date cannot be in the past!", "danger")
-            return redirect(url_for('add_event'))
         
-        # Convert to datetime for MongoDB storage
-        event_datetime = datetime.strptime(date, '%Y-%m-%d')
-
+        # Validation
+        if not all([title, date, hour, minute, ampm, location]):
+            flash('All required fields must be filled!', 'error')
+            return render_template('add_event.html')
+        
+        # Validate location is not empty
+        if not location:
+            flash('Location is required!', 'error')
+            return render_template('add_event.html')
+        
+        # Validate hour and minute
+        try:
+            hour_int = int(hour)
+            minute_int = int(minute)
+            
+            if not (1 <= hour_int <= 12):
+                flash('Hour must be between 1 and 12', 'error')
+                return render_template('add_event.html')
+                
+            if not (0 <= minute_int <= 59):
+                flash('Minute must be between 0 and 59', 'error')
+                return render_template('add_event.html')
+                
+        except ValueError:
+            flash('Invalid hour or minute format', 'error')
+            return render_template('add_event.html')
+        
+        # Convert AM/PM to 24-hour format
+        if ampm == 'PM' and hour_int != 12:
+            hour_24 = hour_int + 12
+        elif ampm == 'AM' and hour_int == 12:
+            hour_24 = 0
+        else:
+            hour_24 = hour_int
+        
+        # Format time as HH:MM (24-hour format)
+        time_24h = f"{hour_24:02d}:{minute_int:02d}"
+        
+        # Combine date and time for validation
+        try:
+            event_datetime = datetime.strptime(f"{date} {time_24h}", "%Y-%m-%d %H:%M")
+            # Store as datetime object for MongoDB
+            event_datetime_obj = event_datetime
+        except ValueError:
+            flash('Invalid date or time format', 'error')
+            return render_template('add_event.html')
+        
+        # Validate date is not in past
+        current_datetime = datetime.now()
+        if event_datetime < current_datetime:
+            flash('Cannot create event in the past! Please select a future date and time.', 'error')
+            return render_template('add_event.html')
+        
+        # Get database connection
         db_conn = get_db_connection()
         if db_conn is None:
-             flash("Database connection failed. Try again later.", "danger")
-             return redirect(url_for('add_event'))
-
+            flash('Database connection failed!', 'error')
+            return render_template('add_event.html')
+        
+        # Check for duplicate events (same title, date, time, location)
+        # Note: Adjust field names based on your actual MongoDB schema
+        duplicate = db_conn.events.find_one({
+            'title': title,
+            'date': event_datetime_obj,  # Using datetime object
+            'location': location
+        })
+        
+        if duplicate:
+            flash('An event with the same title, date, time, and location already exists!', 'error')
+            return render_template('add_event.html')
+        
+        # Insert new event
         try:
-            # CHECK FOR DUPLICATE EVENT
-            if db_conn.events.find_one({
-                "title": {"$regex": f"^{title}$", "$options": "i"},
-                "date": event_datetime,
-                "location": {"$regex": f"^{location}$", "$options": "i"}
-            }):
-                flash(f'An event with the same title "{title}", date {date}, and location "{location}" already exists!', 'error')
-                return redirect(url_for('add_event'))
-
-            # If no duplicate, proceed with insertion
-            event_id = db_conn.events.insert_one({
-                "title": title,
-                "description": description,
-                "date": event_datetime,
-                "location": location,
-                "created_by": created_by
-            }).inserted_id
+            # Prepare event data for MongoDB
+            event_data = {
+                'title': title,
+                'description': description,
+                'date': event_datetime_obj,  # Store as datetime object
+                'location': location,
+                'created_by': session.get('username', 'Unknown'),
+                'created_by_id': ObjectId(session['user_id']) if 'user_id' in session else None,
+                'created_at': datetime.now(),
+                'status': 'active'
+            }
             
-            # NOTIFICATION: Notify all students about new event
-            try:
-                students = list(db_conn.users.find({"role": "student"}))
-                
-                for student in students:
-                    create_notification(
-                        student['_id'],
-                        "New Event Available",
-                        f'New event "{title}" has been added. Register now!',
-                        'info',
-                        url_for('view_events')
-                    )
-            except Exception as e:
-                logging.error(f"New event notification error: {e}")
+            # Insert into MongoDB
+            result = db_conn.events.insert_one(event_data)
+            event_id = result.inserted_id
             
-            flash("Event added successfully!", "success")
-            return redirect(url_for('view_events')) 
+            # Create notification for admin
+            create_notification(
+                ObjectId(session['user_id']),
+                "Event Created",
+                f'Event "{title}" has been created successfully',
+                'success',
+                url_for('view_events')  # CHANGED: Fixed to use existing route
+            )
+            
+            flash(f'Event "{title}" added successfully!', 'success')
+            return redirect(url_for('view_events'))  # CHANGED: Redirect to events page
+            
         except Exception as e:
-            logging.error(f"Add event database query error: {e}")
-            flash(f"Error adding event: {e}", "danger")
-            return redirect(url_for('add_event'))
-
+            flash(f'Error adding event: {str(e)}', 'error')
+            return render_template('add_event.html')
+    
+    # GET request - show the form
     return render_template('add_event.html')
 
 # ---------------- EDIT EVENT -----------------
@@ -638,21 +688,23 @@ def delete_event(event_id):
     return redirect(url_for('view_events'))
 
 # ---------------- VIEW EVENTS -----------------
+# ---------------- VIEW ALL EVENTS (LISTING PAGE) -----------------
 @app.route('/events')
-def view_events():
+def view_events():  # Note: function name is 'view_events'
+    """View all events listing"""
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
     db_conn = get_db_connection()
     if db_conn is None:
-        events = []
+        events_list = []
     else:
         try:
-            events = list(db_conn.events.find().sort("date", 1))
+            events_list = list(db_conn.events.find().sort("date", 1))
             
             # Add is_past flag to each event and convert ObjectId to string
             today = datetime.now().date()
-            for event in events:
+            for event in events_list:
                 # Convert ObjectId to string for template use
                 event['id'] = str(event['_id'])
                 
@@ -664,15 +716,17 @@ def view_events():
                     try:
                         event_date = datetime.strptime(event_date, '%Y-%m-%d').date()
                     except ValueError:
-                        # Try different date format if needed
-                        event_date = datetime.strptime(event_date, '%Y-%m-%d %H:%M:%S').date()
+                        try:
+                            event_date = datetime.strptime(event_date, '%Y-%m-%d %H:%M:%S').date()
+                        except ValueError:
+                            event_date = today
                 
                 event['is_past'] = event_date < today
                 
         except Exception as e:
             logging.error(f"Fetch events database query error: {e}")
             flash(f"Error fetching events: {e}", "danger")
-            events = []
+            events_list = []
     
     current_user_data = {
         'id': session.get('user_id'),
@@ -684,9 +738,11 @@ def view_events():
     today = datetime.now().date()
     
     return render_template('events.html', 
-                         events=events, 
+                         events=events_list, 
                          current_user=current_user_data,
                          today=today)
+# ---------------- VIEW REGISTRATIONS FOR SPECIFIC EVENT -----------------
+# ---------------- VIEW REGISTRATIONS FOR SPECIFIC EVENT -----------------
 @app.route('/view_registrations/<event_id>')
 def view_registrations(event_id):
     # Validate ObjectId
@@ -695,6 +751,7 @@ def view_registrations(event_id):
     except InvalidId:
         flash("Invalid event ID.", "danger")
         return redirect(url_for('view_events'))
+    
     if 'role' not in session or session['role'] != 'admin':
         flash("Access denied.", "danger")
         return redirect(url_for('dashboard'))
@@ -707,22 +764,57 @@ def view_registrations(event_id):
     event_title = "Unknown Event"
 
     try:
-        registrations = list(db_conn.registrations.find({
+        # Get registrations for this event
+        raw_registrations = list(db_conn.registrations.find({
             "event_id": ObjectId(event_id)
-        }).sort("registered_at", 1))
+        }).sort("registered_at", -1))  # Sort by most recent first
 
+        # Get event details
         event = db_conn.events.find_one({"_id": ObjectId(event_id)})
         if event:
             event_title = event['title']
-        print(event_title,registrations)
+        
+        # For each registration, get student details
+        registrations = []
+        for reg in raw_registrations:
+            # Get student/user details
+            try:
+                student_id = reg.get('student_id')
+                
+                # Handle both ObjectId and string formats
+                if isinstance(student_id, str):
+                    student = db_conn.users.find_one({"_id": ObjectId(student_id)})
+                else:
+                    student = db_conn.users.find_one({"_id": student_id})
+                
+                if student:
+                    registrations.append({
+                        'id': str(reg['_id']),
+                        'student_name': student.get('name', 'Unknown Student'),
+                        'phone': reg.get('phone', 'N/A'),
+                        'comments': reg.get('comments', 'None')
+                    })
+                else:
+                    # If student not found, still show the registration
+                    registrations.append({
+                        'id': str(reg['_id']),
+                        'student_name': 'Unknown Student',
+                        'phone': reg.get('phone', 'N/A'),
+                        'comments': reg.get('comments', 'None')
+                    })
+                    
+            except Exception as e:
+                logging.error(f"Error processing registration {reg.get('_id')}: {e}")
+                continue
+                
     except Exception as e:
         logging.error(f"View registrations database query error: {e}")
         flash(f"Error fetching registrations: {e}", "danger")
+        registrations = []
 
     return render_template('view_registrations.html',
-                            registrations=registrations,
-                            event_title=event_title)
-
+                          registrations=registrations,
+                          event_title=event_title)
 # ==================== REDIRECT FOR EMPTY REGISTER EVENT ROUTE ====================
 @app.route('/register_event/')
 def register_event_redirect():
@@ -739,6 +831,7 @@ def register_event(event_id):
     except InvalidId:
         flash("Invalid event ID.", "danger")
         return redirect(url_for('view_events'))
+    
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
@@ -762,13 +855,27 @@ def register_event(event_id):
     
     # Check if event is in the past
     event_date = event['date']
+    event_datetime = None
+    
+    # Parse event datetime
     if isinstance(event_date, datetime):
+        event_datetime = event_date
         event_date = event_date.date()
     elif isinstance(event_date, str):
         try:
-            event_date = datetime.strptime(event_date, '%Y-%m-%d').date()
+            event_datetime = datetime.strptime(event_date, '%Y-%m-%d %H:%M:%S')
+            event_date = event_datetime.date()
         except ValueError:
-            event_date = datetime.strptime(event_date, '%Y-%m-%d %H:%M:%S').date()
+            try:
+                event_datetime = datetime.strptime(event_date, '%Y-%m-%d %H:%M')
+                event_date = event_datetime.date()
+            except ValueError:
+                try:
+                    event_datetime = datetime.strptime(event_date, '%Y-%m-%d')
+                    event_date = event_datetime.date()
+                except ValueError:
+                    flash("Invalid event date format", "danger")
+                    return redirect(url_for('view_events'))
     
     today = datetime.now().date()
     
@@ -798,8 +905,70 @@ def register_event(event_id):
                                  event=event, 
                                  active_registration=existing_registration)
         elif request.method == 'POST':
-            flash(f'You are already registered for "{event["title"]}". ', 'danger')
+            flash(f'You are already registered for "{event["title"]}".', 'danger')
             return redirect(url_for('view_events'))
+    
+    # NEW: Check for time conflict with other events (only if event_datetime is available)
+    if event_datetime:
+        try:
+            # Find all active registrations for this student
+            student_registrations = list(db_conn.registrations.find({
+                "student_id": ObjectId(student_id),
+                "status": "active"
+            }))
+            
+            if student_registrations:
+                # Get event IDs from registrations
+                registered_event_ids = [reg['event_id'] for reg in student_registrations]
+                
+                # Get details of all events the student is registered for
+                registered_events = list(db_conn.events.find({
+                    "_id": {"$in": registered_event_ids}
+                }))
+                
+                # Check for time conflicts
+                for registered_event in registered_events:
+                    registered_event_datetime = registered_event['date']
+                    
+                    # Parse registered event datetime
+                    reg_event_dt = None
+                    if isinstance(registered_event_datetime, datetime):
+                        reg_event_dt = registered_event_datetime
+                    elif isinstance(registered_event_datetime, str):
+                        try:
+                            reg_event_dt = datetime.strptime(registered_event_datetime, '%Y-%m-%d %H:%M:%S')
+                        except ValueError:
+                            try:
+                                reg_event_dt = datetime.strptime(registered_event_datetime, '%Y-%m-%d %H:%M')
+                            except ValueError:
+                                try:
+                                    reg_event_dt = datetime.strptime(registered_event_datetime, '%Y-%m-%d')
+                                except ValueError:
+                                    continue  # Skip if can't parse
+                    
+                    if reg_event_dt:
+                        # Check if the events are on the same date
+                        if event_datetime.date() == reg_event_dt.date():
+                            # Check for time overlap (assuming 2-hour buffer for events)
+                            # Calculate with 2-hour buffer (1 hour before + 1 hour after event)
+                            event_start = event_datetime - timedelta(hours=1)
+                            event_end = event_datetime + timedelta(hours=2)  # 1 hour event + 1 hour buffer
+                            
+                            registered_event_start = reg_event_dt - timedelta(hours=1)
+                            registered_event_end = reg_event_dt + timedelta(hours=2)
+                            
+                            # Check for overlap
+                            if (event_start < registered_event_end and event_end > registered_event_start):
+                                # Format time for display
+                                reg_event_time = reg_event_dt.strftime("%I:%M %p")
+                                current_event_time = event_datetime.strftime("%I:%M %p")
+                                
+                                flash(f'Time conflict! You are already registered for "{registered_event["title"]}" at {reg_event_time}. You cannot register for "{event["title"]}" at {current_event_time} on the same day.', 'warning')
+                                return redirect(url_for('view_events'))
+                                
+        except Exception as e:
+            logging.error(f"Time conflict check error: {e}")
+            # Continue with registration if time check fails (don't block registration due to error)
 
     # Handle POST request
     if request.method == 'POST':
@@ -817,7 +986,7 @@ def register_event(event_id):
             return redirect(url_for('register_event', event_id=event_id))
 
         try:
-            # Double-check for race condition - only check for this specific event
+            # Final check for race condition
             if db_conn.registrations.find_one({
                 "student_id": ObjectId(student_id),
                 "event_id": ObjectId(event_id),
@@ -825,6 +994,44 @@ def register_event(event_id):
             }):
                 flash(f'You are already registered for "{event["title"]}".', 'danger')
                 return redirect(url_for('view_events'))
+                
+            # Final time conflict check (in case of concurrent registrations)
+            if event_datetime:
+                student_registrations = list(db_conn.registrations.find({
+                    "student_id": ObjectId(student_id),
+                    "status": "active"
+                }))
+                
+                if student_registrations:
+                    registered_event_ids = [reg['event_id'] for reg in student_registrations]
+                    registered_events = list(db_conn.events.find({
+                        "_id": {"$in": registered_event_ids}
+                    }))
+                    
+                    for registered_event in registered_events:
+                        registered_event_datetime = registered_event['date']
+                        reg_event_dt = None
+                        
+                        if isinstance(registered_event_datetime, datetime):
+                            reg_event_dt = registered_event_datetime
+                        elif isinstance(registered_event_datetime, str):
+                            try:
+                                reg_event_dt = datetime.strptime(registered_event_datetime, '%Y-%m-%d %H:%M:%S')
+                            except ValueError:
+                                try:
+                                    reg_event_dt = datetime.strptime(registered_event_datetime, '%Y-%m-%d %H:%M')
+                                except ValueError:
+                                    continue
+                        
+                        if reg_event_dt and event_datetime.date() == reg_event_dt.date():
+                            event_start = event_datetime - timedelta(hours=1)
+                            event_end = event_datetime + timedelta(hours=2)
+                            registered_event_start = reg_event_dt - timedelta(hours=1)
+                            registered_event_end = reg_event_dt + timedelta(hours=2)
+                            
+                            if (event_start < registered_event_end and event_end > registered_event_start):
+                                flash(f'Time conflict detected! You are already registered for another event at the same time.', 'warning')
+                                return redirect(url_for('view_events'))
 
             # INSERT with status
             registration_id = db_conn.registrations.insert_one({
@@ -1204,74 +1411,7 @@ def student_dashboard():
     """Redirect to main dashboard (students and admins use the same dashboard)"""
     return redirect(url_for('dashboard'))
 
-# ---------------- VIEW EVENT (SINGULAR) -----------------
-@app.route('/view_event/<event_id>')
-def view_event(event_id):
-    """View details of a single event"""
-    # Validate ObjectId
-    try:
-        ObjectId(event_id)
-    except InvalidId:
-        flash("Invalid event ID.", "danger")
-        return redirect(url_for('view_events'))
-    
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    db_conn = get_db_connection()
-    if db_conn is None:
-        flash("Database connection failed", "danger")
-        return redirect(url_for('view_events'))
-    
-    try:
-        event = db_conn.events.find_one({"_id": ObjectId(event_id)})
-        if not event:
-            flash("Event not found.", "danger")
-            return redirect(url_for('view_events'))
-        
-        # Convert ObjectId to string
-        event['id'] = str(event['_id'])
-        
-        # Format date for display - same as view_events route
-        today = datetime.now().date()
-        event_date = event.get('date')
-        if isinstance(event_date, datetime):
-            event_date = event_date.date()
-        elif isinstance(event_date, str):
-            try:
-                event_date = datetime.strptime(event_date, '%Y-%m-%d').date()
-            except ValueError:
-                try:
-                    event_date = datetime.strptime(event_date, '%Y-%m-%d %H:%M:%S').date()
-                except ValueError:
-                    event_date = today
-        
-        event['is_past'] = event_date < today
-        
-        # Check if user is registered for this event
-        is_registered = False
-        if session.get('role') == 'student':
-            registration = db_conn.registrations.find_one({
-                "student_id": ObjectId(session['user_id']),
-                "event_id": ObjectId(event_id),
-                "status": "active"
-            })
-            is_registered = registration is not None
-        
-        # Use the same template as view_events route
-        return render_template('events.html', 
-                             events=[event], 
-                             current_user={
-                                 'id': session.get('user_id'),
-                                 'username': session.get('username'),
-                                 'role': session.get('role')
-                             },
-                             today=today)
-    except Exception as e:
-        logging.error(f"View event error: {e}")
-        flash(f"Error retrieving event: {e}", "danger")
-        return redirect(url_for('view_events'))
-            
+
 if __name__ == '__main__':
     # Initial connection attempt check
     db = get_db_connection()

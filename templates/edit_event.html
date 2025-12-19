@@ -7,7 +7,6 @@
     <!-- Load Tailwind CSS for modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Enhanced CSS with modern styling */
         body { 
             font-family: 'Inter', sans-serif; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -20,17 +19,47 @@
             background: rgba(255, 255, 255, 0.95);
         }
         
-        /* Enhanced input and textarea styling */
+        .datetime-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .time-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .time-row input[type="number"] {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .time-separator {
+            font-size: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .ampm-select {
+            flex: 0.8;
+        }
+        
         input[type="text"], 
         input[type="date"], 
+        input[type="number"],
+        select,
         textarea {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 12px;
             border: 2px solid #e5e7eb;
             background: #fafafa;
+            padding: 12px 15px;
         }
         
         input:focus, 
+        select:focus,
         textarea:focus {
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
             border-color: #6366f1;
@@ -38,13 +67,13 @@
             transform: translateY(-2px);
         }
         
-        input:hover,
-        textarea:hover {
-            border-color: #d1d5db;
-            background: #f8fafc;
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            display: block;
         }
         
-        /* Custom button styling */
         .submit-btn {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             border-radius: 12px;
@@ -55,77 +84,30 @@
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-            background: linear-gradient(135deg, #5b5fed 0%, #7c4cf5 100%);
         }
         
-        .submit-btn:active {
-            transform: translateY(-1px);
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
-        /* Enhanced flash message styling */
-        .flash-message {
-            border-radius: 10px;
-            border-left: 4px solid;
-            animation: slideIn 0.3s ease-out;
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
         }
         
-        /* Animation for flash messages */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Smooth transitions for all interactive elements */
-        * {
-            transition: all 0.2s ease-in-out;
-        }
-        
-        /* Custom scrollbar for textarea */
-        textarea::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        textarea::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-        
-        textarea::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-        
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-        
-        /* Form label styling */
-        .form-label {
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
-        
-        /* Card hover effect */
-        .card-hover {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .input-error {
+            border-color: #dc2626;
+            background-color: #fef2f2;
         }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
-    <div class="form-container w-full bg-white p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-100/50 card-hover">
+    <div class="form-container w-full bg-white p-6 md:p-8 rounded-2xl shadow-2xl border border-gray-100/50">
         
         <h1 class="text-3xl font-extrabold text-gray-800 text-center mb-6 border-b pb-4">
             Edit Event: <span class="text-indigo-600">{{ event.title }}</span>
@@ -149,8 +131,8 @@
           {% endif %}
         {% endwith %}
 
-        <!-- Form Submission: The action points to the same Flask route, passing the event ID -->
-        <form method="POST" action="{{ url_for('edit_event', event_id=event.id) }}" class="space-y-6">
+        <!-- Form Submission -->
+        <form method="POST" action="{{ url_for('edit_event', event_id=event.id) }}" class="space-y-6" id="editEventForm">
             
             <!-- Title -->
             <div>
@@ -169,14 +151,73 @@
                           required>{{ event.description }}</textarea>
             </div>
 
-            <!-- Date -->
+            <!-- DATE & TIME SECTION -->
             <div>
-                <label for="date" class="form-label">Date</label>
-                <!-- Note: MySQL dates are typically YYYY-MM-DD, which works directly for HTML date input type -->
-                <input type="date" id="date" name="date" 
-                       value="{{ event.date }}"
-                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500" 
-                       required>
+                <label class="form-label">Event Date & Time</label>
+                <div class="datetime-row">
+                    <div style="flex: 1;">
+                        <label for="eventDate" style="font-size: 14px; color: #666; display: block; margin-bottom: 5px;">Date *</label>
+                        {% if event.date is string %}
+                            {% set event_date_str = event.date.split(' ')[0] if ' ' in event.date else event.date %}
+                        {% else %}
+                            {% set event_date_str = event.date.strftime('%Y-%m-%d') %}
+                        {% endif %}
+                        <input type="date" name="date" id="eventDate" value="{{ event_date_str }}" required
+                               class="w-full p-3 border border-gray-300 rounded-xl" min="{{ today }}">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 14px; color: #666; display: block; margin-bottom: 5px;">Time *</label>
+                        <div class="time-row">
+                            <!-- Extract hour, minute, AM/PM from event.date -->
+                            {% if event.date is string %}
+                                {% if ' ' in event.date %}
+                                    {% set event_time = event.date.split(' ')[1] %}
+                                {% elif 'T' in event.date %}
+                                    {% set event_time = event.date.split('T')[1] %}
+                                {% else %}
+                                    {% set event_time = '10:00:00' %}
+                                {% endif %}
+                            {% else %}
+                                {% set event_time = event.date.strftime('%H:%M:%S') %}
+                            {% endif %}
+                            
+                            {% set time_parts = event_time.split(':') %}
+                            {% set hour_24 = time_parts[0]|int %}
+                            {% set minute = time_parts[1] %}
+                            
+                            {% if hour_24 == 0 %}
+                                {% set hour = 12 %}
+                                {% set ampm = 'AM' %}
+                            {% elif hour_24 < 12 %}
+                                {% set hour = hour_24 %}
+                                {% set ampm = 'AM' %}
+                            {% elif hour_24 == 12 %}
+                                {% set hour = 12 %}
+                                {% set ampm = 'PM' %}
+                            {% else %}
+                                {% set hour = hour_24 - 12 %}
+                                {% set ampm = 'PM' %}
+                            {% endif %}
+                            
+                            <!-- Hours -->
+                            <input type="number" name="hour" id="eventHour" min="1" max="12" 
+                                   value="{{ hour }}" required
+                                   class="p-3 border border-gray-300 rounded-xl text-center">
+                            <span class="time-separator">:</span>
+                            <!-- Minutes -->
+                            <input type="number" name="minute" id="eventMinute" min="0" max="59" 
+                                   value="{{ minute }}" required
+                                   class="p-3 border border-gray-300 rounded-xl text-center">
+                            <!-- AM/PM -->
+                            <select name="ampm" id="eventAmPm" class="ampm-select p-3 border border-gray-300 rounded-xl" required>
+                                <option value="AM" {% if ampm == 'AM' %}selected{% endif %}>AM</option>
+                                <option value="PM" {% if ampm == 'PM' %}selected{% endif %}>PM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="error-message" id="datetimeError">⚠️ Event date and time cannot be in the past</div>
+                <div class="text-sm text-gray-500 mt-1">Select a future date and time for your event</div>
             </div>
 
             <!-- Location -->
@@ -188,8 +229,11 @@
                        required>
             </div>
 
+            <!-- Hidden field for 24-hour time format -->
+            <input type="hidden" name="time" id="hiddenTime">
+
             <!-- Submission Button -->
-            <button type="submit" 
+            <button type="submit" id="submitBtn"
                     class="submit-btn w-full py-3 text-white font-semibold text-lg rounded-xl transition duration-300 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50">
                 Save Changes
             </button>
@@ -206,5 +250,152 @@
             </a>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('eventDate');
+            const hourInput = document.getElementById('eventHour');
+            const minuteInput = document.getElementById('eventMinute');
+            const ampmInput = document.getElementById('eventAmPm');
+            const hiddenTimeInput = document.getElementById('hiddenTime');
+            const form = document.getElementById('editEventForm');
+            const datetimeError = document.getElementById('datetimeError');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Set min date to today
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const minDate = `${yyyy}-${mm}-${dd}`;
+            
+            dateInput.setAttribute('min', minDate);
+            
+            // Format minute input to always show 2 digits
+            minuteInput.addEventListener('change', function() {
+                if (this.value < 10) {
+                    this.value = this.value.toString().padStart(2, '0');
+                }
+                if (this.value > 59) {
+                    this.value = '59';
+                }
+                if (this.value < 0) {
+                    this.value = '00';
+                }
+                validateDateTime();
+            });
+            
+            // Format hour input
+            hourInput.addEventListener('change', function() {
+                if (this.value < 1) {
+                    this.value = '1';
+                }
+                if (this.value > 12) {
+                    this.value = '12';
+                }
+                validateDateTime();
+            });
+            
+            // Handle AM/PM change
+            ampmInput.addEventListener('change', function() {
+                validateDateTime();
+            });
+            
+            // Handle date change
+            dateInput.addEventListener('change', function() {
+                validateDateTime();
+            });
+            
+            // Convert AM/PM to 24-hour format for backend
+            function convertTo24Hour(hour, minute, ampm) {
+                let hour24 = parseInt(hour);
+                
+                if (ampm === 'PM' && hour24 !== 12) {
+                    hour24 += 12;
+                } else if (ampm === 'AM' && hour24 === 12) {
+                    hour24 = 0;
+                }
+                
+                // Format to 2 digits
+                const hourStr = hour24.toString().padStart(2, '0');
+                const minuteStr = minute.toString().padStart(2, '0');
+                
+                return `${hourStr}:${minuteStr}`;
+            }
+            
+            // Validate date and time
+            function validateDateTime() {
+                const selectedDate = dateInput.value;
+                const hour = hourInput.value;
+                const minute = minuteInput.value;
+                const ampm = ampmInput.value;
+                
+                if (!selectedDate || !hour || !minute || !ampm) {
+                    return true; // Let server handle missing values
+                }
+                
+                // Convert to 24-hour format for comparison
+                const time24 = convertTo24Hour(hour, minute, ampm);
+                const selectedDateTime = new Date(`${selectedDate}T${time24}`);
+                const now = new Date();
+                
+                // Add 5 minute buffer for editing existing events
+                const bufferTime = new Date(now.getTime() - 5 * 60 * 1000);
+                
+                // For editing, allow current time if event is happening now
+                if (selectedDateTime < bufferTime) {
+                    datetimeError.style.display = 'block';
+                    dateInput.classList.add('input-error');
+                    hourInput.classList.add('input-error');
+                    minuteInput.classList.add('input-error');
+                    ampmInput.classList.add('input-error');
+                    submitBtn.disabled = true;
+                    return false;
+                } else {
+                    datetimeError.style.display = 'none';
+                    dateInput.classList.remove('input-error');
+                    hourInput.classList.remove('input-error');
+                    minuteInput.classList.remove('input-error');
+                    ampmInput.classList.remove('input-error');
+                    submitBtn.disabled = false;
+                    return true;
+                }
+            }
+            
+            // Update hidden time field before form submission
+            form.addEventListener('submit', function(e) {
+                // Validate date/time first
+                if (!validateDateTime()) {
+                    e.preventDefault();
+                    datetimeError.style.display = 'block';
+                    
+                    // Scroll to error
+                    datetimeError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Re-enable button after 2 seconds
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                    }, 2000);
+                    return;
+                }
+                
+                // Convert AM/PM to 24-hour format
+                const hour24 = convertTo24Hour(hourInput.value, minuteInput.value, ampmInput.value);
+                hiddenTimeInput.value = hour24;
+                
+                // Show loading state
+                submitBtn.innerHTML = 'Saving...';
+                submitBtn.disabled = true;
+            });
+            
+            // Initial validation
+            validateDateTime();
+            
+            // Auto-fill minutes to 2 digits if needed
+            if (minuteInput.value.length === 1) {
+                minuteInput.value = minuteInput.value.padStart(2, '0');
+            }
+        });
+    </script>
 </body>
 </html>

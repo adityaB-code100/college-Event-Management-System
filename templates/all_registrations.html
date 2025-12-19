@@ -419,7 +419,7 @@
                 <table class="registration-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No.</th> <!-- Changed from "ID" to "No." -->
                             <th>Event Name</th>
                             <th>Student Name</th>
                             <th>Email</th>
@@ -431,7 +431,7 @@
                     <tbody>
                         {% for reg in registrations %}
                         <tr>
-                            <td>{{ reg.id }}</td>
+                            <td>{{ loop.index }}</td> <!-- Changed to display sequential number -->
                             <td>
                                 <strong>{{ reg.event_name }}</strong>
                                 {% if reg.registered_at %}
